@@ -29,6 +29,7 @@ function WorkflowBuilderInner() {
 
   const nodeIdCounter = useRef<number>(1)
   const connectingNodeId = useRef<string | null>(null)
+  const connectingHandleId = useRef<string | null>(null)
   const { screenToFlowPosition } = useReactFlow()
 
 
@@ -115,6 +116,7 @@ function WorkflowBuilderInner() {
   // Track connection start
   const onConnectStart = useCallback((_: any, params: { nodeId: string | null; handleId: string | null; handleType: string | null }) => {
     connectingNodeId.current = params.nodeId
+    connectingHandleId.current = params.handleId
   }, [])
 
   // Handle edge drag end - auto-create nodes
@@ -209,8 +211,9 @@ function WorkflowBuilderInner() {
 
       // Create edge from source to new node
       const newEdge: Edge = {
-        id: `e-${connectingNodeId.current}-${newNodeId}`,
+        id: `e-${connectingNodeId.current}-${connectingHandleId.current || 'default'}-${newNodeId}`,
         source: connectingNodeId.current,
+        sourceHandle: connectingHandleId.current || null, // ADD THIS LINE
         target: newNodeId,
         markerEnd: { type: MarkerType.ArrowClosed },
         style: { strokeWidth: 2 }
@@ -218,6 +221,7 @@ function WorkflowBuilderInner() {
 
       setEdges((eds) => [...eds, newEdge])
       connectingNodeId.current = null
+      connectingHandleId.current = null
     },
     [nodes, edges, setNodes, setEdges, screenToFlowPosition]
   )
