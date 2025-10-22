@@ -189,7 +189,7 @@ function WorkflowBuilderInner() {
         position,
         data: {
           label: newNodeType.charAt(0).toUpperCase() + newNodeType.slice(1),
-          ...(newNodeType === 'criteria' ? { examples: [] } : {}),
+          ...(newNodeType === 'criteria' ? { subCriterias: [] } : {}),
           ...(newNodeType === 'state' ? {
             personality: 'Neutral',
             context: '',
@@ -233,7 +233,7 @@ function WorkflowBuilderInner() {
     }
 
     if (type === 'criteria') {
-      newNode.data.examples = []
+      newNode.data.subCriterias = []
     } else if (type === 'state') {
       newNode.data = {
         ...newNode.data,

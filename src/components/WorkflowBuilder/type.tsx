@@ -12,6 +12,12 @@ export interface Example {
   importance: ImportanceLevel
 }
 
+export interface SubCriteria {
+  id: string
+  name: string
+  examples: Example[]
+}
+
 export interface NodeData {
   label: string
   selected?: boolean
@@ -21,6 +27,8 @@ export interface NodeData {
   context?: string
   retryCount?: number
   exemplars?: string[]
+  subCriterias?: SubCriteria[]
+  currentSubCriteriaInput?: string
   [key: string]: unknown
 }
 
@@ -33,7 +41,7 @@ export interface StateNodeData extends NodeData {
   exemplars: string[]
 }
 export interface CriteriaNodeData extends NodeData {
-  examples: Example[]
+  subCriterias: SubCriteria[]
 }
 
 export type CustomNode = Node<NodeData>

@@ -1,56 +1,49 @@
 import { memo } from "react"
-import { CriteriaNodeData, ImportanceLevel } from "../../type"
+import { CriteriaNodeData } from "../../type"
 import { Handle, Position } from "@xyflow/react"
 
 const CriteriaNode = memo(function CriteriaNode({ data, id }: { data: CriteriaNodeData; id: string }) {
-    const examples = data.examples || []
-    const currentInput = data.currentInput || ''
+    const subCriterias = data.subCriterias || []
+    const currentSubCriteriaInput = data.currentSubCriteriaInput || ''
     const isSelected = data.selected
 
-    const getImportanceColor = (importance: ImportanceLevel): string => {
-        switch (importance) {
-            case 'Very High': return 'bg-red-600 text-white'
-            case 'High': return 'bg-orange-500 text-white'
-            case 'Medium': return 'bg-yellow-400 text-black'
-            case 'Low': return 'bg-blue-400 text-white'
-            case 'Very Low': return 'bg-gray-400 text-white'
-            default: return 'bg-yellow-400 text-black'
-        }
-    }
-
     return (
-        <div className={`shadow-lg rounded-lg bg-yellow-100 border-2 text-gray-900 min-w-[240px] max-w-[500px] transition-all border-yellow-300
+        <div className={`shadow-lg rounded-lg bg-yellow-200 border-2 text-gray-900 min-w-[240px] max-w-[500px] transition-all border-yellow-300
             ${isSelected ? 'shadow-2xl ring-4 ring-yellow-300' : ''}`}>
-            <div className={`w-full px-4 py-2 text-center font-semibold ${examples.length > 0 || currentInput ? 'border-b-2' : ''} border-yellow-300`}>
+            {/* Main Criteria Header */}
+            <div className={`w-full h-12 px-4 font-bold text-lg flex justify-center items-center ${(subCriterias.length > 0 || currentSubCriteriaInput) ? 'border-b-2' : ''} border-yellow-400`}>
                 {data.label}
             </div>
-            {(examples.length > 0 || currentInput) &&
-                <div className="w-full p-2 space-y-1.5">
-                    {examples.map((ex, idx) => (
-                        <div key={idx} className={`relative py-1 px-2 text-sm rounded-md ${getImportanceColor(ex.importance)}`}>
+            
+            {/* Sub-Criteria List (Names Only with Handles) */}
+            {(subCriterias.length > 0 || currentSubCriteriaInput) && (
+                <div className="w-full p-2 space-y-1.5 bg-yellow-100 rounded-b-lg">
+                    {subCriterias.map((subCriteria) => (
+                        <div key={subCriteria.id} className="relative py-2 px-3 text-sm font-semibold rounded-md bg-yellow-50 border-2 border-yellow-300">
                             <Handle
                                 type="source"
                                 position={Position.Right}
-                                id={`example-${idx}`}
+                                id={`sub-${subCriteria.id}`}
                                 className="!w-3 !h-3 !bg-emerald-500 !-mr-2.5"
                             />
-                            {ex.text}
+                            {subCriteria.name}
                         </div>
                     ))}
-                    {currentInput && (
-                        <div className="relative py-1 px-2 text-sm italic border border-amber-600">
+                    {currentSubCriteriaInput && (
+                        <div className="relative py-2 px-3 text-sm font-semibold italic border-2 border-dashed border-amber-600 rounded-md bg-yellow-50">
                             <Handle
                                 type="source"
                                 position={Position.Right}
-                                id={`example-preview`}
+                                id={`sub-preview`}
                                 className="!w-3 !h-3 !bg-emerald-500 !-mr-2.5"
                                 style={{ opacity: 0 }}
                             />
-                            {currentInput}
+                            {currentSubCriteriaInput}
                         </div>
                     )}
                 </div>
-            }
+            )}
+            
             <Handle
                 type="target"
                 position={Position.Left}
