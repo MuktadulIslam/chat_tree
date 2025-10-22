@@ -195,6 +195,11 @@ function WorkflowBuilderInner() {
             context: '',
             retryCount: 1,
             exemplars: []
+          } : {}),
+          ...(newNodeType === 'end' ? {
+            label: 'END',
+            personality: 'Neutral',
+            context: ''
           } : {})
         },
       }
@@ -241,6 +246,13 @@ function WorkflowBuilderInner() {
         context: '',
         retryCount: 1,
         exemplars: []
+      }
+    } else if (type === 'end') {
+      newNode.data = {
+        ...newNode.data,
+        label: 'END',
+        personality: 'Neutral',
+        context: ''
       }
     }
 

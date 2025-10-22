@@ -4,6 +4,7 @@ import { memo, useCallback, useEffect, useState } from "react";
 import { useWorkflow } from "../../context/WorkflowContextProvider";
 import EditState from "./EditState";
 import EditCriteria from "./EditCriteria";
+import EditEnd from "./EditEnd";
 
 const EditPanel = memo(function EditPanel() {
     const { setNodes, selectedNode, setSelectedNode } = useWorkflow();
@@ -33,9 +34,11 @@ const EditPanel = memo(function EditPanel() {
         {selectedNode && (
             <div className="absolute top-5 right-4 bg-white shadow-xl rounded-lg p-4 z-10 border-2 border-gray-300 w-[500px] max-h-[calc(100vh-6rem)] overflow-y-auto">
                 <h3 className="font-bold text-lg mb-3">Edit {selectedNode.type ? selectedNode.type.charAt(0).toUpperCase() + selectedNode.type.slice(1) : 'Node'}</h3>
-                <div className="mb-3">
-                    <label className="block text-sm font-semibold mb-1">Name:</label>
-                    {selectedNode.type !== 'end' && selectedNode.type !== 'start' &&
+                
+                {/* Only show name input for state and criteria nodes */}
+                {(selectedNode.type === 'state' || selectedNode.type === 'criteria') && (
+                    <div className="mb-3">
+                        <label className="block text-sm font-semibold mb-1">Name:</label>
                         <input
                             type="text"
                             value={editValue}
@@ -46,8 +49,8 @@ const EditPanel = memo(function EditPanel() {
                             className="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
                             placeholder="Enter name"
                         />
-                    }
-                </div>
+                    </div>
+                )}
 
                 {selectedNode.type === 'state' && (
                     <EditState />
@@ -55,6 +58,10 @@ const EditPanel = memo(function EditPanel() {
 
                 {selectedNode.type === 'criteria' && (
                     <EditCriteria />
+                )}
+
+                {selectedNode.type === 'end' && (
+                    <EditEnd />
                 )}
 
                 <button

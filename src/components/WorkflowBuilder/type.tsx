@@ -33,7 +33,10 @@ export interface NodeData {
 }
 
 export interface StartNodeData extends NodeData { }
-export interface EndNodeData extends NodeData { }
+export interface EndNodeData extends NodeData {
+  personality: 'Angry' | 'Annoyed' | 'Neutral' | 'Content' | 'Happy'
+  context: string
+}
 export interface StateNodeData extends NodeData {
   personality: 'Angry' | 'Annoyed' | 'Neutral' | 'Content' | 'Happy'
   context: string
