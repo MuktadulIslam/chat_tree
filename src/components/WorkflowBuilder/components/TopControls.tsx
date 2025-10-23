@@ -23,6 +23,9 @@ const TopControls = memo(function TopControls({ addNode }: { addNode: (type: Nod
             >
                 + End (Shift+Alt+E)
             </button>
+            <div className="ml-auto text-sm text-gray-300">
+                💡 Tip: Select a node and press <kbd className="px-2 py-1 bg-gray-700 rounded">Shift+Alt+D</kbd> to duplicate
+            </div>
         </div>
     );
 });

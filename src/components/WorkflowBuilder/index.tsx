@@ -46,7 +46,7 @@ function WorkflowBuilderInner() {
 				}))
 			)
 		}
-	}, [setNodes])
+	}, [setNodes, setSelectedNode])
 
 	// Handle pane click to deselect
 	const onPaneClick = useCallback(() => {
@@ -57,7 +57,7 @@ function WorkflowBuilderInner() {
 				data: { ...n.data, selected: false, currentInput: '' }
 			}))
 		)
-	}, [setNodes])
+	}, [setNodes, setSelectedNode])
 
 
 	// Validate connections
@@ -201,6 +201,43 @@ function WorkflowBuilderInner() {
 		return newNode;
 	}, [setNodes])
 
+	// Duplicate selected node
+	const duplicateNode = useCallback(() => {
+		if (!selectedNode || selectedNode.type === 'start') return;
+
+		nodeIdCounter.current += 1;
+		const newId = `${selectedNode.type}-${nodeIdCounter.current}`;
+
+		// Deep clone the node data
+		const clonedData = JSON.parse(JSON.stringify(selectedNode.data));
+		
+		// Remove selection state from cloned data
+		delete clonedData.selected;
+		delete clonedData.currentInput;
+		delete clonedData.currentSubCriteriaInput;
+
+		const newNode: CustomNode = {
+			id: newId,
+			type: selectedNode.type,
+			position: {
+				x: selectedNode.position.x + 50,
+				y: selectedNode.position.y + 50
+			},
+			data: clonedData
+		};
+
+		setNodes((nds) => [...nds, newNode]);
+
+		// Select the newly created node
+		setSelectedNode(newNode);
+		setNodes((nds) =>
+			nds.map((n) => ({
+				...n,
+				data: { ...n.data, selected: n.id === newId }
+			}))
+		);
+	}, [selectedNode, setNodes, setSelectedNode]);
+
 	// Keyboard shortcuts
 	useEffect(() => {
 		const handleKeyDown = (event: KeyboardEvent) => {
@@ -218,9 +255,9 @@ function WorkflowBuilderInner() {
 						event.preventDefault()
 						addNode('criteria')
 						break
-					case 'z':
-						console.log("nodes:", nodes);
-						console.log("edges:", edges);
+					case 'd':
+						event.preventDefault()
+						duplicateNode()
 						break
 				}
 			}
@@ -228,7 +265,7 @@ function WorkflowBuilderInner() {
 
 		window.addEventListener('keydown', handleKeyDown)
 		return () => window.removeEventListener('keydown', handleKeyDown)
-	}, [addNode, nodes])
+	}, [addNode, duplicateNode])
 
 
 
@@ -247,12 +284,12 @@ function WorkflowBuilderInner() {
 			});
 			onNodesChange(filteredChanges);
 		},
-		[onNodesChange, selectedNode]
+		[onNodesChange, selectedNode, onPaneClick]
 	);
 
 	return (
 		<div className="w-full h-screen flex flex-col relative">
-			{/* <TopControls addNode={addNode} /> */}
+			<TopControls addNode={addNode} />
 			<EditPanel />
 
 			{/* React Flow Canvas */}
