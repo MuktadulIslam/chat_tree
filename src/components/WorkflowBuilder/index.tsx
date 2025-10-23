@@ -218,13 +218,17 @@ function WorkflowBuilderInner() {
 						event.preventDefault()
 						addNode('criteria')
 						break
+					case 'z':
+						console.log("nodes:", nodes);
+						console.log("edges:", edges);
+						break
 				}
 			}
 		}
 
 		window.addEventListener('keydown', handleKeyDown)
 		return () => window.removeEventListener('keydown', handleKeyDown)
-	}, [addNode])
+	}, [addNode, nodes])
 
 
 
@@ -248,7 +252,7 @@ function WorkflowBuilderInner() {
 
 	return (
 		<div className="w-full h-screen flex flex-col relative">
-			<TopControls addNode={addNode} />
+			{/* <TopControls addNode={addNode} /> */}
 			<EditPanel />
 
 			{/* React Flow Canvas */}

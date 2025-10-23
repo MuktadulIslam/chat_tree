@@ -4,19 +4,22 @@ import { useWorkflow } from "../../context/WorkflowContextProvider";
 import { StateNodeData } from "../../type";
 
 const EditState = memo(function EditState() {
-    const { setNodes, selectedNode } = useWorkflow();
+    const { setNodes, selectedNode, nodes } = useWorkflow();
 
     const exemplarInputRef = useRef<HTMLInputElement>(null);
     const [currentExemplar, setCurrentExemplar] = useState<string>('');
     const [editingExemplarIndex, setEditingExemplarIndex] = useState<number | null>(null)
 
+    // Get current node data (to avoid stale state)
+    const currentNode = nodes.find(n => n.id === selectedNode?.id);
+
     // Update state node properties
     const updateStateProperty = useCallback((property: string, value: any) => {
-        if (!selectedNode || selectedNode.type !== 'state') return;
+        if (!currentNode || currentNode.type !== 'state') return;
 
         setNodes((nds) =>
             nds.map((node) => {
-                if (node.id === selectedNode.id) {
+                if (node.id === currentNode.id) {
                     const updatedNode = {
                         ...node,
                         data: {
@@ -29,14 +32,14 @@ const EditState = memo(function EditState() {
                 return node
             })
         )
-    }, [selectedNode, setNodes]);
+    }, [currentNode, setNodes]);
 
     const addExemplar = useCallback(() => {
-        if (!selectedNode || selectedNode.type !== 'state' || !currentExemplar.trim()) return
+        if (!currentNode || currentNode.type !== 'state' || !currentExemplar.trim()) return
 
         setNodes((nds) =>
             nds.map((node) => {
-                if (node.id === selectedNode.id) {
+                if (node.id === currentNode.id) {
                     const exemplars = node.data.exemplars || []
                     let newExemplars: string[]
 
@@ -66,12 +69,12 @@ const EditState = memo(function EditState() {
 
         setCurrentExemplar('')
         setEditingExemplarIndex(null)
-    }, [selectedNode, currentExemplar, editingExemplarIndex, setNodes]);
+    }, [currentNode, currentExemplar, editingExemplarIndex, setNodes]);
 
     const editExemplar = useCallback((index: number) => {
-        if (!selectedNode || selectedNode.type !== 'state') return
+        if (!currentNode || currentNode.type !== 'state') return
 
-        const exemplars = selectedNode.data.exemplars || []
+        const exemplars = currentNode.data.exemplars || []
         if (index < exemplars.length) {
             const exemplar = exemplars[index]
             setCurrentExemplar(exemplar)
@@ -82,15 +85,15 @@ const EditState = memo(function EditState() {
                 exemplarInputRef.current.focus()
             }
         }
-    }, [selectedNode])
+    }, [currentNode])
 
     // Delete exemplar from state node
     const deleteExemplar = useCallback((index: number) => {
-        if (!selectedNode || selectedNode.type !== 'state') return;
+        if (!currentNode || currentNode.type !== 'state') return;
 
         setNodes((nds) =>
             nds.map((node) => {
-                if (node.id === selectedNode.id) {
+                if (node.id === currentNode.id) {
                     const exemplars = node.data.exemplars || []
                     const updatedNode = {
                         ...node,
@@ -113,14 +116,14 @@ const EditState = memo(function EditState() {
             // Adjust editing index if deleting an item before it
             setEditingExemplarIndex(editingExemplarIndex - 1)
         }
-    }, [selectedNode, editingExemplarIndex, setNodes])
+    }, [currentNode, editingExemplarIndex, setNodes])
 
     return (
         <div>
             <div className="mb-3">
                 <label className="block text-sm font-semibold mb-1">Personality Profile:</label>
                 <select
-                    value={(selectedNode?.data as StateNodeData).personality || 'Neutral'}
+                    value={(currentNode?.data as StateNodeData)?.personality || 'Neutral'}
                     onChange={(e) => updateStateProperty('personality', e.target.value)}
                     className="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
                 >
@@ -135,7 +138,7 @@ const EditState = memo(function EditState() {
             <div className="mb-3">
                 <label className="block text-sm font-semibold mb-1">Context:</label>
                 <textarea
-                    value={(selectedNode?.data as StateNodeData).context || ''}
+                    value={(currentNode?.data as StateNodeData)?.context || ''}
                     onChange={(e) => updateStateProperty('context', e.target.value)}
                     className="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500 min-h-[80px]"
                     placeholder="Enter context..."
@@ -148,7 +151,7 @@ const EditState = memo(function EditState() {
                     type="number"
                     min="1"
                     max="5"
-                    value={(selectedNode?.data as StateNodeData).retryCount || 1}
+                    value={(currentNode?.data as StateNodeData)?.retryCount || 1}
                     onChange={(e) => {
                         const value = Math.min(5, Math.max(1, parseInt(e.target.value) || 1))
                         updateStateProperty('retryCount', value)
@@ -201,7 +204,7 @@ const EditState = memo(function EditState() {
 
                 {/* List of exemplars */}
                 <div className="space-y-2 max-h-48 overflow-y-auto">
-                    {((selectedNode?.data as StateNodeData).exemplars || []).map((exemplar, index) => (
+                    {((currentNode?.data as StateNodeData)?.exemplars || []).map((exemplar, index) => (
                         <div key={index} className={`flex items-start gap-2 px-3 py-2 rounded border transition-all ${editingExemplarIndex === index
                             ? 'bg-blue-50 border-blue-300 ring-2 ring-blue-200'
                             : 'bg-gray-50 border-gray-200'
