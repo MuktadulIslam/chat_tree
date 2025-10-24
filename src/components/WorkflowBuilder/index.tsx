@@ -113,6 +113,44 @@ function WorkflowBuilderInner() {
 		},
 		[setEdges, isValidConnection, nodes])
 
+	// Add nodes
+	const addNode = useCallback((type: NodeType, position?: { x: number; y: number }): CustomNode => {
+		nodeIdCounter.current += 1
+		const id = `${type}-${nodeIdCounter.current}`
+
+		const newNode: CustomNode = {
+			id,
+			type,
+			position: position || {
+				x: Math.random() * 400 + 200,
+				y: Math.random() * 300 + 100
+			},
+			data: { label: type.charAt(0).toUpperCase() + type.slice(1) },
+		}
+
+		if (type === 'criteria') {
+			newNode.data.subCriterias = []
+		} else if (type === 'state') {
+			newNode.data = {
+				...newNode.data,
+				personality: 'Neutral',
+				context: '',
+				retryCount: 1,
+				exemplars: []
+			}
+		} else if (type === 'end') {
+			newNode.data = {
+				...newNode.data,
+				label: 'END',
+				personality: 'Neutral',
+				context: ''
+			}
+		}
+
+		setNodes((nds) => [...nds, newNode]);
+		return newNode;
+	}, [setNodes])
+
 
 	const onConnectEnd = useCallback((event: MouseEvent | TouchEvent, connectionState: FinalConnectionState) => {
 		if (!connectionState.fromNode) return;
@@ -160,46 +198,8 @@ function WorkflowBuilderInner() {
 		}
 		setEdges((eds) => [...eds, newEdge]);
 	},
-		[nodes, edges, setNodes, setEdges, screenToFlowPosition]
-	)
+		[edges, setEdges, screenToFlowPosition, addNode])
 
-	// Add nodes
-	const addNode = useCallback((type: NodeType, position?: { x: number; y: number }): CustomNode => {
-		nodeIdCounter.current += 1
-		const id = `${type}-${nodeIdCounter.current}`
-
-		const newNode: CustomNode = {
-			id,
-			type,
-			position: position || {
-				x: Math.random() * 400 + 200,
-				y: Math.random() * 300 + 100
-			},
-			data: { label: type.charAt(0).toUpperCase() + type.slice(1) },
-		}
-
-		if (type === 'criteria') {
-			newNode.data.subCriterias = []
-		} else if (type === 'state') {
-			newNode.data = {
-				...newNode.data,
-				personality: 'Neutral',
-				context: '',
-				retryCount: 1,
-				exemplars: []
-			}
-		} else if (type === 'end') {
-			newNode.data = {
-				...newNode.data,
-				label: 'END',
-				personality: 'Neutral',
-				context: ''
-			}
-		}
-
-		setNodes((nds) => [...nds, newNode]);
-		return newNode;
-	}, [setNodes])
 
 	// Duplicate selected node
 	const duplicateNode = useCallback(() => {
@@ -210,7 +210,7 @@ function WorkflowBuilderInner() {
 
 		// Deep clone the node data
 		const clonedData = JSON.parse(JSON.stringify(selectedNode.data));
-		
+
 		// Remove selection state from cloned data
 		delete clonedData.selected;
 		delete clonedData.currentInput;

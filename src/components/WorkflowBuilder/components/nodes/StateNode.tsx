@@ -2,7 +2,7 @@ import { memo } from "react"
 import { StateNodeData } from "../../type"
 import { Handle, Position } from "@xyflow/react"
 
-const StateNode = memo(function StateNode({ data, id }: { data: StateNodeData; id: string }) {
+const StateNode = memo(function StateNode({ data }: { data: StateNodeData }) {
     const isSelected = data.selected
     return (
         <div className={`shadow-lg rounded-lg bg-blue-100 border-2 border-blue-300 text-black min-w-[120px] transition-all

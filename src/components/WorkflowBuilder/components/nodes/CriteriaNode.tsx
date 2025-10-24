@@ -25,7 +25,7 @@ const CriteriaNode = memo(function CriteriaNode({ data, id }: { data: CriteriaNo
             {(subCriterias.length > 0 || currentSubCriteriaInput) && (
                 <div className="w-full p-2 space-y-1.5 bg-yellow-100 rounded-b-lg">
                     {subCriterias.map((subCriteria, index) => (
-                        <div key={subCriteria.id} className="relative py-2 px-3 text-sm font-semibold rounded-md bg-yellow-50 border-2 border-yellow-300">
+                        <div key={index} className="relative py-2 px-3 text-sm font-semibold rounded-md bg-yellow-50 border-2 border-yellow-300">
                             <Handle
                                 type="source"
                                 position={Position.Right}
