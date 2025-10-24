@@ -136,14 +136,24 @@ function WorkflowBuilderInner() {
 				personality: 'Neutral',
 				context: '',
 				retryCount: 1,
-				exemplars: []
+				exemplars: [],
+				animations_type_has: {
+					pre: false,
+					during: false,
+					post: false
+				}
 			}
 		} else if (type === 'end') {
 			newNode.data = {
 				...newNode.data,
 				label: 'END',
 				personality: 'Neutral',
-				context: ''
+				context: '',
+				animations_type_has: {
+					pre: false,
+					during: false,
+					post: false
+				}
 			}
 		}
 

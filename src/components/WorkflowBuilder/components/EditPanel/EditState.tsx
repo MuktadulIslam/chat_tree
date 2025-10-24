@@ -34,6 +34,31 @@ const EditState = memo(function EditState() {
         )
     }, [currentNode, setNodes]);
 
+    // Update animation type checkbox
+    const updateAnimationType = useCallback((animationType: 'pre' | 'during' | 'post', value: boolean) => {
+        if (!currentNode || currentNode.type !== 'state') return;
+
+        setNodes((nds) =>
+            nds.map((node) => {
+                if (node.id === currentNode.id) {
+                    const currentAnimations = node.data.animations_type_has || { pre: false, during: false, post: false };
+                    const updatedNode = {
+                        ...node,
+                        data: {
+                            ...node.data,
+                            animations_type_has: {
+                                ...currentAnimations,
+                                [animationType]: value
+                            }
+                        },
+                    }
+                    return updatedNode
+                }
+                return node
+            })
+        )
+    }, [currentNode, setNodes]);
+
     const addExemplar = useCallback(() => {
         if (!currentNode || currentNode.type !== 'state' || !currentExemplar.trim()) return
 
@@ -118,6 +143,8 @@ const EditState = memo(function EditState() {
         }
     }, [currentNode, editingExemplarIndex, setNodes])
 
+    const animationsTypeHas = (currentNode?.data as StateNodeData)?.animations_type_has || { pre: false, during: false, post: false };
+
     return (
         <div>
             <div className="mb-3">
@@ -158,6 +185,39 @@ const EditState = memo(function EditState() {
                     }}
                     className="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
+            </div>
+
+            <div className="mb-3">
+                <label className="block text-sm font-semibold mb-1">Animations Type:</label>
+                <div className="flex gap-1 bg-blue-50 rounded-lg border border-blue-200">
+                    <label className="flex items-center gap-2 cursor-pointer hover:bg-blue-100 p-2 rounded transition">
+                        <input
+                            type="checkbox"
+                            checked={animationsTypeHas.pre}
+                            onChange={(e) => updateAnimationType('pre', e.target.checked)}
+                            className="w-4 h-4 text-blue-600 rounded focus:ring-2 focus:ring-blue-500"
+                        />
+                        <span className="text-sm font-medium">Pre Animations</span>
+                    </label>
+                    <label className="flex items-center gap-2 cursor-pointer hover:bg-blue-100 p-2 rounded transition">
+                        <input
+                            type="checkbox"
+                            checked={animationsTypeHas.during}
+                            onChange={(e) => updateAnimationType('during', e.target.checked)}
+                            className="w-4 h-4 text-blue-600 rounded focus:ring-2 focus:ring-blue-500"
+                        />
+                        <span className="text-sm font-medium">During Animations</span>
+                    </label>
+                    <label className="flex items-center gap-2 cursor-pointer hover:bg-blue-100 p-2 rounded transition">
+                        <input
+                            type="checkbox"
+                            checked={animationsTypeHas.post}
+                            onChange={(e) => updateAnimationType('post', e.target.checked)}
+                            className="w-4 h-4 text-blue-600 rounded focus:ring-2 focus:ring-blue-500"
+                        />
+                        <span className="text-sm font-medium">Post Animations</span>
+                    </label>
+                </div>
             </div>
 
             <div className="mb-3">

@@ -18,6 +18,12 @@ export interface SubCriteria {
   examples: Example[]
 }
 
+export interface AnimationsType {
+  pre: boolean
+  during: boolean
+  post: boolean
+}
+
 export interface NodeData {
   label: string
   selected?: boolean
@@ -29,6 +35,7 @@ export interface NodeData {
   exemplars?: string[]
   subCriterias?: SubCriteria[]
   currentSubCriteriaInput?: string
+  animations_type_has?: AnimationsType
   [key: string]: unknown
 }
 
@@ -36,12 +43,14 @@ export type StartNodeData = NodeData;
 export interface EndNodeData extends NodeData {
   personality: 'Angry' | 'Annoyed' | 'Neutral' | 'Content' | 'Happy'
   context: string
+  animations_type_has: AnimationsType
 }
 export interface StateNodeData extends NodeData {
   personality: 'Angry' | 'Annoyed' | 'Neutral' | 'Content' | 'Happy'
   context: string
   retryCount: number
   exemplars: string[]
+  animations_type_has: AnimationsType
 }
 export interface CriteriaNodeData extends NodeData {
   subCriterias: SubCriteria[]
