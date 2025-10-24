@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@xyflow/react": "^12.8.6",
+    "lightningcss": "^1.30.2",
     "next": "15.5.4",
     "react": "19.1.0",
     "react-dom": "19.1.0"
