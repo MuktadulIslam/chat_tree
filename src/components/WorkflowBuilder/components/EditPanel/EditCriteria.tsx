@@ -27,7 +27,7 @@ const EditCriteria = memo(function EditCriteria() {
                 setSelectedSubCriteriaId(subCriterias[0].id);
             }
         }
-    }, [currentNode]);
+    }, [currentNode, selectedSubCriteriaId]);
 
     // Get currently selected sub-criteria
     const getSelectedSubCriteria = useCallback((): SubCriteria | null => {
@@ -408,7 +408,7 @@ const EditCriteria = memo(function EditCriteria() {
             {selectedSubCriteria && (
                 <div className="p-3 bg-blue-50 rounded-lg border-2 border-blue-200">
                     <label className="block text-sm font-semibold mb-2">
-                        Examples for "{selectedSubCriteria.name}":
+                        {`Examples for "${selectedSubCriteria.name}":`}
                     </label>
 
                     {/* Input field for new example */}

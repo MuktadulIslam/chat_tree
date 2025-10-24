@@ -168,7 +168,7 @@ function WorkflowBuilderInner() {
 		nodeIdCounter.current += 1
 		const id = `${type}-${nodeIdCounter.current}`
 
-		let newNode: CustomNode = {
+		const newNode: CustomNode = {
 			id,
 			type,
 			position: position || {

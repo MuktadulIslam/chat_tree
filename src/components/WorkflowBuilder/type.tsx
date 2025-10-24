@@ -32,7 +32,7 @@ export interface NodeData {
   [key: string]: unknown
 }
 
-export interface StartNodeData extends NodeData { }
+export type StartNodeData = NodeData;
 export interface EndNodeData extends NodeData {
   personality: 'Angry' | 'Annoyed' | 'Neutral' | 'Content' | 'Happy'
   context: string

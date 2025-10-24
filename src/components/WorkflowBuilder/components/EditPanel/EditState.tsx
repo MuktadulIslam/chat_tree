@@ -14,7 +14,7 @@ const EditState = memo(function EditState() {
     const currentNode = nodes.find(n => n.id === selectedNode?.id);
 
     // Update state node properties
-    const updateStateProperty = useCallback((property: string, value: any) => {
+    const updateStateProperty = useCallback((property: string, value: string | number) => {
         if (!currentNode || currentNode.type !== 'state') return;
 
         setNodes((nds) =>

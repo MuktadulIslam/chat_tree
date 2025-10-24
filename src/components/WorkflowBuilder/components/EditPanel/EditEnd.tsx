@@ -10,7 +10,7 @@ const EditEnd = memo(function EditEnd() {
     const currentNode = nodes.find(n => n.id === selectedNode?.id);
 
     // Update end node properties
-    const updateEndProperty = useCallback((property: string, value: any) => {
+    const updateEndProperty = useCallback((property: string, value: string) => {
         if (!currentNode || currentNode.type !== 'end') return;
 
         setNodes((nds) =>
