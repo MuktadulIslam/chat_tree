@@ -1,8 +1,8 @@
 import { memo } from "react"
 import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels"
-import StateFlowPreview from "../StateFlowPreview"
-import StateAnimations from "../StateAnimations"
-import RoomStructure from "../Room/RoomStructure"
+import StateFlowPreview from "./StateFlowPreview"
+import StateAnimations from "./StateAnimations"
+import RoomStructureView from "./RoomStructureView"
 
 const WorkFlowPreview = memo(function WorkFlowPreview() {
     return (
@@ -21,7 +21,7 @@ const WorkFlowPreview = memo(function WorkFlowPreview() {
                         
                         <Panel defaultSize={50} minSize={10}>
                             <div className="w-full h-full border-2 border-gray-400">
-                                <RoomStructure />
+                                <RoomStructureView />
                             </div>
                         </Panel>
                     </PanelGroup>

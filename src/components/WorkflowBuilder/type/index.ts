@@ -1,8 +1,8 @@
 import { NodeTypes, type Node } from '@xyflow/react'
-import StartNode from './components/nodes/StartNode'
-import EndNode from './components/nodes/EndNode'
-import StateNode from './components/nodes/StateNode'
-import CriteriaNode from './components/nodes/CriteriaNode'
+import StartNode from '../components/nodes/StartNode'
+import EndNode from '../components/nodes/EndNode'
+import StateNode from '../components/nodes/StateNode'
+import CriteriaNode from '../components/nodes/CriteriaNode'
 
 export type ImportanceLevel = 'Very Low' | 'Low' | 'Medium' | 'High' | 'Very High'
 export type NodeType = 'start' | 'end' | 'state' | 'criteria'

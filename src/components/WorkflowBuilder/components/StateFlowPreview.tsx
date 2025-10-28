@@ -15,7 +15,7 @@ const StateFlowPreview = memo(function StateFlowPreview() {
             edges={edges}
             nodeTypes={nodeTypes}
             minZoom={0.3}
-            maxZoom={5}
+            maxZoom={2}
             fitView
         >
             <Background variant={BackgroundVariant.Dots} gap={12} size={1} />

@@ -1,225 +1,27 @@
 'use client';
-import React, { useState, useRef, MouseEvent } from 'react';
+import React, {MouseEvent } from 'react';
+import { Opening, Point,} from '../../type/roomDataTypes';
+import { useRoom } from '../../context/RoomContextProvider';
 
-interface Point {
-	x: number;
-	y: number;
-}
 
-interface RoomObject {
-	id: string;
-	name: string;
-	position: {
-		x: number;
-		y: number;
-	};
-	dimensions: {
-		length: number;
-		width: number;
-	};
-	rotation: number; // in degrees
-}
 
-interface Opening {
-	name: string;
-	wall_name: 'front' | 'back' | 'left' | 'right'; // front=bottom, back=top, left=left, right=right
-	position: number; // movement along the wall axis
-	width: number;
-}
+export default function RoomViewer() {
+	const {
+		roomData,
+		selectedPoint,
+		previousPoint,
+		roomRef,
+		SCALE,
+		ROOM_LENGTH,
+		ROOM_WIDTH,
+		CENTER_X,
+		CENTER_Y,
+		OPENING_THICKNESS,
+		setSelectedPoint,
+		setPreviousPoint
+	} = useRoom();
 
-interface RoomData {
-	room_dimensions: {
-		length: number;
-		width: number;
-	};
-	objects: RoomObject[];
-	openings?: Opening[];
-}
 
-const sampleRoomData: RoomData = {
-	room_dimensions: {
-		length: 50,
-		width: 40,
-	},
-	objects: [
-		// Bed (centered against top wall)
-		{
-			id: '1',
-			name: 'King Bed',
-			position: { x: 0, y: 15 },
-			dimensions: { length: 8, width: 6 },
-			rotation: 0,
-		},
-		// Nightstands on both sides of bed
-		{
-			id: '2',
-			name: 'Nightstand',
-			position: { x: -6, y: 15 },
-			dimensions: { length: 2, width: 2 },
-			rotation: 0,
-		},
-		{
-			id: '3',
-			name: 'Nightstand',
-			position: { x: 6, y: 15 },
-			dimensions: { length: 2, width: 2 },
-			rotation: 0,
-		},
-		// Dresser on left wall
-		{
-			id: '4',
-			name: 'Dresser',
-			position: { x: -20, y: 8 },
-			dimensions: { length: 6, width: 2 },
-			rotation: 0,
-		},
-		// Wardrobe on left wall
-		{
-			id: '5',
-			name: 'Wardrobe',
-			position: { x: -20, y: -5 },
-			dimensions: { length: 5, width: 3 },
-			rotation: 0,
-		},
-		// Desk and chair on right wall
-		{
-			id: '6',
-			name: 'Desk',
-			position: { x: 18, y: 10 },
-			dimensions: { length: 5, width: 3 },
-			rotation: 0,
-		},
-		{
-			id: '7',
-			name: 'Office Chair',
-			position: { x: 18, y: 7 },
-			dimensions: { length: 2, width: 2 },
-			rotation: 0,
-		},
-		// Reading nook in corner
-		{
-			id: '8',
-			name: 'Armchair',
-			position: { x: 15, y: -12 },
-			dimensions: { length: 3, width: 3 },
-			rotation: 30,
-		},
-		{
-			id: '9',
-			name: 'Side Table',
-			position: { x: 18, y: -10 },
-			dimensions: { length: 2, width: 2 },
-			rotation: 0,
-		},
-		{
-			id: '10',
-			name: 'Floor Lamp',
-			position: { x: 13, y: -14 },
-			dimensions: { length: 1, width: 1 },
-			rotation: 0,
-		},
-		// Bookshelf on bottom wall
-		{
-			id: '11',
-			name: 'Bookshelf',
-			position: { x: 0, y: -16 },
-			dimensions: { length: 8, width: 2 },
-			rotation: 0,
-		},
-		// TV stand opposite the bed
-		{
-			id: '12',
-			name: 'TV Stand',
-			position: { x: 0, y: -12 },
-			dimensions: { length: 6, width: 2 },
-			rotation: 0,
-		},
-		// Bench at foot of bed
-		{
-			id: '13',
-			name: 'Storage Bench',
-			position: { x: 0, y: 10 },
-			dimensions: { length: 6, width: 2 },
-			rotation: 0,
-		},
-		// Decorative plants
-		{
-			id: '14',
-			name: 'Plant Stand',
-			position: { x: -18, y: -14 },
-			dimensions: { length: 1.5, width: 1.5 },
-			rotation: 0,
-		},
-		{
-			id: '15',
-			name: 'Plant',
-			position: { x: 10, y: 16 },
-			dimensions: { length: 1, width: 1 },
-			rotation: 0,
-		},
-		// Area rug (center of room)
-		{
-			id: '16',
-			name: 'Area Rug',
-			position: { x: 0, y: 2 },
-			dimensions: { length: 12, width: 10 },
-			rotation: 0,
-		},
-		// Ottoman
-		{
-			id: '17',
-			name: 'Ottoman',
-			position: { x: -8, y: -8 },
-			dimensions: { length: 2.5, width: 2.5 },
-			rotation: 45,
-		},
-		// Full-length mirror
-		{
-			id: '18',
-			name: 'Mirror',
-			position: { x: -15, y: -12 },
-			dimensions: { length: 2, width: 0.5 },
-			rotation: 0,
-		},
-	],
-	openings: [
-		{
-			name: 'Main Door',
-			wall_name: 'left',
-			position: 5, // 5 units from center along the wall
-			width: 3,
-		},
-		{
-			name: 'Window 1',
-			wall_name: 'back',
-			position: -10,
-			width: 4,
-		},
-		{
-			name: 'Window 2',
-			wall_name: 'back',
-			position: 10,
-			width: 4,
-		},
-		{
-			name: 'Window 3',
-			wall_name: 'right',
-			position: 0,
-			width: 5,
-		},
-	],
-};
-
-export default function RoomViewer({ roomData = sampleRoomData }: { roomData?: RoomData }) {
-	const [selectedPoint, setSelectedPoint] = useState<Point | null>(null);
-	const roomRef = useRef<HTMLDivElement>(null);
-
-	const SCALE = 30; // pixels per unit
-	const ROOM_LENGTH = roomData.room_dimensions.length;
-	const ROOM_WIDTH = roomData.room_dimensions.width;
-	const CENTER_X = ROOM_LENGTH / 2;
-	const CENTER_Y = ROOM_WIDTH / 2;
-	const OPENING_THICKNESS = 0.3; // thickness of the opening visual in room units
 
 	// Convert center-based coordinates to absolute room coordinates
 	const centerToAbsolute = (centerX: number, centerY: number) => ({
@@ -260,10 +62,21 @@ export default function RoomViewer({ roomData = sampleRoomData }: { roomData?: R
 
 		// Ensure coordinates are within bounds
 		if (absX >= 0 && absX <= ROOM_LENGTH && absY >= 0 && absY <= ROOM_WIDTH) {
-			setSelectedPoint({
+			const newPoint: Point = {
 				x: parseFloat(centerCoords.x.toFixed(2)),
 				y: parseFloat(centerCoords.y.toFixed(2)),
-			});
+				selected_for: 'Angry Avatar',
+				animation_type: 'Pre Animation',
+			};
+
+			// Move current selected point to previous, and update its animation_type
+			if (selectedPoint) {
+				setPreviousPoint({
+					...selectedPoint,
+					animation_type: 'Pre Animation',
+				});
+			}
+			setSelectedPoint(newPoint);
 		}
 	};
 
@@ -388,7 +201,7 @@ export default function RoomViewer({ roomData = sampleRoomData }: { roomData?: R
 					</div>
 
 					{/* Room Objects */}
-					{roomData.objects.map((obj) => {
+					{roomData?.objects.map((obj) => {
 						const color = getColorForName(obj.name);
 						const absPos = centerToAbsolute(obj.position.x, obj.position.y);
 
@@ -416,7 +229,7 @@ export default function RoomViewer({ roomData = sampleRoomData }: { roomData?: R
 					})}
 
 					{/* Openings (Doors & Windows) */}
-					{roomData.openings?.map((opening, index) => {
+					{roomData?.openings?.map((opening, index) => {
 						const { style, labelStyle, color } = getOpeningStyle(opening);
 						const isDoor = opening.name.toLowerCase().includes('door');
 
@@ -448,10 +261,37 @@ export default function RoomViewer({ roomData = sampleRoomData }: { roomData?: R
 						);
 					})}
 
-					{/* Selected Point Marker */}
+					{/* Previous Point Marker (Green) */}
+					{previousPoint && (
+						<div
+							className="absolute w-4 h-4 bg-green-500 rounded-full border-2 border-green-700 shadow-lg transform -translate-x-1/2 -translate-y-1/2 pointer-events-auto z-40 cursor-pointer"
+							style={{
+								left: `${(CENTER_X + previousPoint.x) * SCALE}px`,
+								top: `${(ROOM_WIDTH - (CENTER_Y + previousPoint.y)) * SCALE}px`,
+							}}
+						>
+							{/* Green glow effect */}
+							<div className="absolute inset-0 bg-green-500 rounded-full opacity-50 blur-sm scale-150" />
+							<div className="absolute bottom-full mb-2 left-1/2 transform -translate-x-1/2 bg-white border-2 border-green-700 rounded shadow-lg px-2 py-0.5 whitespace-nowrap z-50">
+								{previousPoint.selected_for && (
+									<div className="text-sm font-bold text-gray-800">{previousPoint.selected_for}</div>
+								)}
+								{previousPoint.animation_type && (
+									<div className="text-xs text-gray-500 italic">{previousPoint.animation_type}</div>
+								)}
+								<div className="text-xs text-gray-600 my-1">
+									({previousPoint.x}, {previousPoint.y})
+								</div>
+								{/* Arrow pointing down */}
+								<div className="absolute top-full left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-8 border-r-8 border-t-8 border-l-transparent border-r-transparent border-t-green-700" />
+							</div>
+						</div>
+					)}
+
+					{/* Selected Point Marker (Red) */}
 					{selectedPoint && (
 						<div
-							className="absolute w-4 h-4 bg-red-500 rounded-full border-2 border-red-700 shadow-lg transform -translate-x-1/2 -translate-y-1/2 animate-pulse pointer-events-none z-50"
+							className="absolute w-4 h-4 bg-red-500 rounded-full border-2 border-red-700 shadow-lg transform -translate-x-1/2 -translate-y-1/2 animate-pulse pointer-events-auto z-50 cursor-pointer"
 							style={{
 								left: `${(CENTER_X + selectedPoint.x) * SCALE}px`,
 								top: `${(ROOM_WIDTH - (CENTER_Y + selectedPoint.y)) * SCALE}px`,
@@ -459,6 +299,17 @@ export default function RoomViewer({ roomData = sampleRoomData }: { roomData?: R
 						>
 							{/* Red glow effect */}
 							<div className="absolute inset-0 bg-red-500 rounded-full opacity-50 blur-sm scale-150" />
+							<div className="absolute bottom-full mb-2 left-1/2 transform -translate-x-1/2 bg-white border-2 border-red-700 rounded shadow-lg px-2 py-0.5 whitespace-nowrap z-50">
+								<div className="text-sm font-bold text-gray-800">{selectedPoint.selected_for}</div>
+								{selectedPoint.animation_type && (
+									<div className="text-xs text-gray-500 italic">{selectedPoint.animation_type}</div>
+								)}
+								<div className="text-xs text-gray-600 my-1">
+									({selectedPoint.x}, {selectedPoint.y})
+								</div>
+								{/* Arrow pointing down */}
+								<div className="absolute top-full left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-8 border-r-8 border-t-8 border-l-transparent border-r-transparent border-t-red-700" />
+							</div>
 						</div>
 					)}
 				</div>

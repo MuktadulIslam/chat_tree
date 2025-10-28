@@ -1,9 +1,17 @@
-import { memo} from "react";
+import { memo, useEffect } from "react";
 import { TransformWrapper, TransformComponent } from "react-zoom-pan-pinch";
-import RoomSelector from "./RoomSelector";
+import RoomViewer from "./RoomViewer";
+import { sampleRoomData } from "./utils";
+import { useRoom } from "../../context/RoomContextProvider";
 
 
-const RoomStructure = memo(function RoomStructure() {
+const RoomStructureView = memo(function RoomStructureView() {
+    const { setRoomData } = useRoom();
+
+    useEffect(() => {
+        setRoomData(sampleRoomData);
+    }, [setRoomData]);
+    
     return (
         <div className="w-full h-full overflow-hidden">
             <TransformWrapper
@@ -23,11 +31,11 @@ const RoomStructure = memo(function RoomStructure() {
                         height: "100%"
                     }}
                 >
-                    <RoomSelector />
+                    <RoomViewer />
                 </TransformComponent>
             </TransformWrapper>
         </div>
     );
 });
 
-export default RoomStructure;
+export default RoomStructureView;

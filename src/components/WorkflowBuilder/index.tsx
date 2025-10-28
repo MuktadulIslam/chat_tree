@@ -6,6 +6,7 @@ import { useWorkflow, WorkflowContextProvider } from './context/WorkflowContextP
 import StateFlowBuilder from './components/StateFlowBuilder'
 import { memo, useEffect } from 'react'
 import WorkFlowPreview from './components/WorkFlowPreview'
+import { RoomContextProvider } from './context/RoomContextProvider'
 
 
 const WorkflowBuilderInner = memo(function WorkflowBuilderInner() {
@@ -33,10 +34,12 @@ const WorkflowBuilderInner = memo(function WorkflowBuilderInner() {
 
 export default function WorkflowBuilder() {
 	return (
-		<WorkflowContextProvider>
-			<ReactFlowProvider>
-				<WorkflowBuilderInner />
-			</ReactFlowProvider>
-		</WorkflowContextProvider>
+		<RoomContextProvider>
+			<WorkflowContextProvider>
+				<ReactFlowProvider>
+					<WorkflowBuilderInner />
+				</ReactFlowProvider>
+			</WorkflowContextProvider>
+		</RoomContextProvider>
 	)
 }
