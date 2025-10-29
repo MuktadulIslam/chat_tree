@@ -34,7 +34,7 @@ interface RoomProviderProps {
     initialRoomData?: RoomData;
 }
 
-export const RoomContextProvider: React.FC<RoomProviderProps> = ({ children, initialRoomData }) => {
+export default function RoomContextProvider({ children, initialRoomData }: RoomProviderProps) {
     const [roomData, setRoomData] = useState<RoomData | null>(initialRoomData || null);
     const [selectedPoint, setSelectedPoint] = useState<Point | null>(null);
     const [previousPoint, setPreviousPoint] = useState<Point | null>(null);

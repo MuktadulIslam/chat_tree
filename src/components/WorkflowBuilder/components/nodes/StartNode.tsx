@@ -1,8 +1,6 @@
 import { memo } from "react"
-// import { StartNodeData } from "../../type"
 import { Handle, Position } from "@xyflow/react"
 
-// const StartNode = memo(function StartNode({ data }: { data: StartNodeData }) {
 const StartNode = memo(function StartNode() {
     return (
         <div className="px-6 py-3 shadow-lg rounded-lg bg-green-200 border-2 border-green-500 text-black font-bold text-base">

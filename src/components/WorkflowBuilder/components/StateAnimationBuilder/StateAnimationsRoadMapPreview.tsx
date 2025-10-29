@@ -18,21 +18,9 @@ import {
     useSortable,
 } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-
-type StateType = 'end' | 'start' | 'state';
-type AnimationType = 'Pre' | 'During' | 'Post';
-
-// Types
-interface WorkFlow {
-    id: string;
-    title: string;
-    description?: string;
-    state_name: string;
-    state_type: StateType;
-    animation_types: AnimationType[];
-    order: number;
-    position?: { x: number; y: number };
-}
+import { FaArrowDownLong } from "react-icons/fa6";
+import { WorkFlow } from '../../type/stateAnimationBuilderDataType';
+import AnimationTags from './AnimationTags';
 
 // Generate workflow data
 const generateWorkFlows = (): WorkFlow[] => {
@@ -40,98 +28,124 @@ const generateWorkFlows = (): WorkFlow[] => {
         {
             id: '1',
             title: 'User Authentication Flow',
-            description: 'Handle user login, registration, and session management',
+            context: 'Handle user login, registration, and session management Handle user login, registration, and session management',
             state_name: 'Asuth Pending',
             state_type: 'state',
-            animation_types: ['Pre', 'During'],
+            animations: [
+                { type: 'Pre', animation_seance: [] },
+                { type: 'During', animation_seance: [] }
+            ],
             order: 1,
             position: { x: 100, y: 100 }
         },
         {
             id: '2',
             title: 'Data Processing Pipeline',
-            description: 'Process and transform incoming data streams',
+            context: 'Process and transform incoming data streams',
             state_name: 'Processing',
             state_type: 'state',
-            animation_types: ['During'],
+            animations: [
+                { type: 'During', animation_seance: [] }
+            ],
             order: 2
         },
         {
             id: '3',
             title: 'File Upload Handler',
-            description: 'Manage file uploads with validation and storage',
+            context: 'Manage file uploads with validation and storage',
             state_name: 'Upload Complete',
             state_type: 'end',
-            animation_types: ['Pre', 'Post'],
+            animations: [
+                { type: 'Pre', animation_seance: [] },
+                { type: 'Post', animation_seance: [] }
+            ],
             order: 3,
             position: { x: 100, y: 300 }
         },
         {
             id: '4',
             title: 'Payment Gateway Integration',
-            description: 'Handle payment processing and transaction management',
+            context: 'Handle payment processing and transaction management',
             state_name: 'Payment Pending',
             state_type: 'state',
-            animation_types: ['During'],
+            animations: [
+                { type: 'During', animation_seance: [] }
+            ],
             order: 4,
             position: { x: 100, y: 400 }
         },
         {
             id: '5',
             title: 'Email Notification System',
-            description: 'Send automated emails and track delivery status',
+            context: 'Send automated emails and track delivery status',
             state_name: 'Notification Sent',
             state_type: 'end',
-            animation_types: ['Post'],
+            animations: [
+                { type: 'Post', animation_seance: [] }
+            ],
             order: 5
         },
         {
             id: '6',
             title: 'API Rate Limiter',
-            description: 'Manage API request limits and throttling',
+            context: 'Manage API request limits and throttling',
             state_name: 'Rate Limited',
             state_type: 'state',
-            animation_types: ['Pre', 'During'],
+            animations: [
+                { type: 'Pre', animation_seance: [] },
+                { type: 'During', animation_seance: [] }
+            ],
             order: 6,
             position: { x: 100, y: 600 }
         },
         {
             id: '7',
             title: 'Cache Management',
-            description: 'Handle data caching and cache invalidation',
+            context: 'Handle data caching and cache invalidation',
             state_name: 'Cache Updated',
             state_type: 'state',
-            animation_types: ['During', 'Post'],
+            animations: [
+                { type: 'During', animation_seance: [] },
+                { type: 'Post', animation_seance: [] }
+            ],
             order: 7,
             position: { x: 100, y: 700 }
         },
         {
             id: '8',
             title: 'Error Handling Flow',
-            description: 'Manage application errors and exception handling',
+            context: 'Manage application errors and exception handling',
             state_name: 'Error Handled',
             state_type: 'end',
-            animation_types: ['Post'],
+            animations: [
+                { type: 'Post', animation_seance: [] }
+            ],
             order: 8,
             position: { x: 100, y: 800 }
         },
         {
             id: '9',
             title: 'Data Synchronization',
-            description: 'Sync data across multiple devices and platforms',
+            context: 'Sync data across multiple devices and platforms',
             state_name: 'Sync In Progress',
             state_type: 'state',
-            animation_types: ['During'],
+            animations: [
+                { type: 'During', animation_seance: [] }
+            ],
             order: 9,
             position: { x: 100, y: 900 }
         },
         {
             id: '10',
             title: 'Background Job Processor',
-            description: 'Process background jobs and scheduled tasks',
+            context: 'Process background jobs and scheduled tasks',
             state_name: 'Job Queued',
             state_type: 'state',
-            animation_types: ['Pre', 'During', 'Post'],
+            animations: [
+                { type: 'Pre', animation_seance: [] },
+                { type: 'During', animation_seance: [] },
+                { type: 'Post', animation_seance: [] }
+            ],
             order: 10,
             position: { x: 100, y: 1000 }
         }
@@ -141,35 +155,9 @@ const generateWorkFlows = (): WorkFlow[] => {
 };
 
 
-// Animation Type Tags Component
-const AnimationTags = memo(function AnimationTags({ types }: { types: AnimationType[] }) {
-    const getAnimationStyle = (type: 'Pre' | 'During' | 'Post') => {
-        const styles = {
-            'Pre': 'bg-pink-100 text-pink-800 border-pink-200',
-            'During': 'bg-amber-100 text-amber-800 border-amber-200',
-            'Post': 'bg-emerald-100 text-emerald-800 border-emerald-200'
-        };
-        return styles[type];
-    };
-
-    return (
-        <div className="flex flex-wrap gap-2">
-            {types.map((type, index) => (
-                <span
-                    key={index}
-                    className={`px-2 py-0.5 rounded-md text-xs font-medium border ${getAnimationStyle(type)}`}
-                >
-                    {type}
-                </span>
-            ))}
-        </div>
-    );
-});
-
-
 const WorkflowContent = memo(function WorkflowContent({ workflow }: { workflow: WorkFlow }) {
     return (
-        <div className="flex items-start justify-between">
+        <div className="min-w-20 flex items-start justify-between">
             <div className="flex-1 min-w-0">
                 {/* Workflow Title and Order */}
                 <div className="flex items-center gap-3">
@@ -183,9 +171,9 @@ const WorkflowContent = memo(function WorkflowContent({ workflow }: { workflow: 
 
                 {/* Workflow Description */}
                 <p className="text-gray-600 text-sm line-clamp-2">
-                    {workflow.description}
+                    {workflow.context}
                 </p>
-                <p className={`${workflow.state_type === 'end' ? 'text-red-400 ' : 'text-blue-400 '} mb-2`}>
+                <p className={`${workflow.state_type === 'end' ? 'text-red-400 ' : 'text-blue-400 '} mb-2 line-clamp-2 text-sm`}>
                     <strong>
                         <span className='mr-1'>State:</span>
                         {workflow.state_name}
@@ -194,7 +182,7 @@ const WorkflowContent = memo(function WorkflowContent({ workflow }: { workflow: 
 
                 {/* Animation Types */}
                 <div className="mb-1">
-                    <AnimationTags types={workflow.animation_types} />
+                    <AnimationTags types={workflow.animations.map((animation) => animation.type)} />
                 </div>
 
                 {/* Workflow Metadata */}
@@ -255,7 +243,7 @@ const WorkflowDragOverlay: React.FC<{ workflow: WorkFlow }> = ({ workflow }) => 
 
 
 // Main Workflow Manager Component
-const StateAnimationsRoadMapPreview = memo(function StateAnimationsRoadMapPreview({ initialWorkFlows = generateWorkFlows() }: { initialWorkFlows: WorkFlow[] }) {
+const StateAnimationsRoadMapPreview = memo(function StateAnimationsRoadMapPreview({ initialWorkFlows = generateWorkFlows() }: { initialWorkFlows?: WorkFlow[] }) {
     const [workflows, setWorkflows] = useState<WorkFlow[]>(initialWorkFlows);
     const [activeWorkflow, setActiveWorkflow] = useState<WorkFlow | null>(null);
 
@@ -300,10 +288,9 @@ const StateAnimationsRoadMapPreview = memo(function StateAnimationsRoadMapPrevie
     };
 
     return (
-        <div className="w-full h-full p-2">
-            <div className="w-full h-full bg-white rounded-2xl shadow-lg p-4">
-                <h3 className="text-2xl font-bold text-gray-900 mb-2">State flows ({workflows.length})</h3>
-
+        <div className="w-full h-full bg-white rounded-2xl border shadow-lg flex flex-col">
+            <h3 className="text-2xl font-bold text-gray-900 p-2 border-b-2">Animations Roadmap ({workflows.length})</h3>
+            <div className="w-full h-full overflow-hidden p-2">
                 <DndContext
                     sensors={sensors}
                     collisionDetection={closestCenter}
@@ -313,12 +300,19 @@ const StateAnimationsRoadMapPreview = memo(function StateAnimationsRoadMapPrevie
                     {/* Scrollable Workflow List */}
                     <div className="h-full overflow-y-auto overflow-x-hidden pr-2">
                         <SortableContext items={workflows.map(w => w.id)} strategy={verticalListSortingStrategy}>
-                            <div className="space-y-3">
-                                {workflows.map((workflow) => (
-                                    <SortableWorkflow
-                                        key={workflow.id}
-                                        workflow={workflow}
-                                    />
+                            <div className="">
+                                {workflows.map((workflow, index) => (
+                                    <div key={index}>
+                                        <SortableWorkflow
+                                            key={workflow.id}
+                                            workflow={workflow}
+                                        />
+                                        {workflows.length - 1 != index &&
+                                            (<div className="w-full h-auto p-1 flex justify-center">
+                                                <FaArrowDownLong size={25} className='text-gray-700'/>
+                                            </div>
+                                            )}
+                                    </div>
                                 ))}
                             </div>
                         </SortableContext>

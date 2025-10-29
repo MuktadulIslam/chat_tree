@@ -15,7 +15,8 @@ import {
     BackgroundVariant,
     useReactFlow,
     NodeChange,
-    FinalConnectionState
+    FinalConnectionState,
+    ReactFlowProvider
 } from '@xyflow/react'
 import '@xyflow/react/dist/style.css'
 import { CustomNode, NodeData, NodeType, nodeTypes } from '../type'
@@ -25,7 +26,7 @@ import TopControls from './TopControls'
 
 
 
-const StateFlowBuilder = memo(function StateFlowBuilder() {
+const StateFlowBuilderInner = memo(function StateFlowBuilder() {
     const { nodes, edges, onNodesChange, onEdgesChange, setNodes, setEdges, selectedNode, setSelectedNode } = useWorkflow();
 
     const nodeIdCounter = useRef<number>(1);
@@ -326,4 +327,10 @@ const StateFlowBuilder = memo(function StateFlowBuilder() {
     )
 })
 
-export default StateFlowBuilder;
+export default function StateFlowBuilder() {
+    return (
+        <ReactFlowProvider>
+            <StateFlowBuilderInner />
+        </ReactFlowProvider>
+    )
+};

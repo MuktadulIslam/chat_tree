@@ -16,7 +16,7 @@ interface WorkflowContextType {
 
     selectedNode: Node<NodeData> | null
     setSelectedNode: React.Dispatch<React.SetStateAction<Node<NodeData> | null>>
-    
+
     isSetAnimationModeOn: boolean
     setIsSetAnimationModeOn: React.Dispatch<React.SetStateAction<boolean>>
 }
@@ -31,11 +31,8 @@ export const useWorkflow = () => {
     return context
 }
 
-interface WorkflowProviderProps {
-    children: ReactNode
-}
 
-export const WorkflowContextProvider: React.FC<WorkflowProviderProps> = ({ children }) => {
+export default function WorkflowContextProvider({ children }: { children: ReactNode }) {
     const [nodes, setNodes, onNodesChange] = useNodesState<Node<NodeData>>(initialNodes);
     const [edges, setEdges, onEdgesChange] = useEdgesState<Edge>(initialEdges);
     const [selectedNode, setSelectedNode] = useState<Node<NodeData> | null>(null);

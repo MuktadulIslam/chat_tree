@@ -4,8 +4,9 @@ import EndNode from '../components/nodes/EndNode'
 import StateNode from '../components/nodes/StateNode'
 import CriteriaNode from '../components/nodes/CriteriaNode'
 
-export type ImportanceLevel = 'Very Low' | 'Low' | 'Medium' | 'High' | 'Very High'
-export type NodeType = 'start' | 'end' | 'state' | 'criteria'
+export type ImportanceLevel = 'Very Low' | 'Low' | 'Medium' | 'High' | 'Very High';
+export type NodeType = 'start' | 'end' | 'state' | 'criteria';
+export type Personality = 'Angry' | 'Annoyed' | 'Neutral' | 'Content' | 'Happy';
 
 export interface Example {
   text: string
@@ -29,7 +30,7 @@ export interface NodeData {
   selected?: boolean
   examples?: Example[]
   currentInput?: string
-  personality?: 'Angry' | 'Annoyed' | 'Neutral' | 'Content' | 'Happy'
+  personality?: Personality
   context?: string
   retryCount?: number
   exemplars?: string[]
@@ -41,12 +42,12 @@ export interface NodeData {
 
 export type StartNodeData = NodeData;
 export interface EndNodeData extends NodeData {
-  personality: 'Angry' | 'Annoyed' | 'Neutral' | 'Content' | 'Happy'
+  personality: Personality
   context: string
   animations_type_has: AnimationsType
 }
 export interface StateNodeData extends NodeData {
-  personality: 'Angry' | 'Annoyed' | 'Neutral' | 'Content' | 'Happy'
+  personality: Personality
   context: string
   retryCount: number
   exemplars: string[]

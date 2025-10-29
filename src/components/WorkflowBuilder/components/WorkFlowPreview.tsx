@@ -1,8 +1,8 @@
 import { memo } from "react"
 import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels"
 import StateFlowPreview from "./StateFlowPreview"
-import StateAnimations from "./StateAnimations"
 import RoomStructureView from "./RoomStructureView"
+import StateAnimationsBuilder from "./StateAnimationBuilder"
 
 const WorkFlowPreview = memo(function WorkFlowPreview() {
     return (
@@ -17,7 +17,7 @@ const WorkFlowPreview = memo(function WorkFlowPreview() {
                             </div>
                         </Panel>
                         
-                        <PanelResizeHandle className="h-1 bg-gray-300 hover:bg-blue-400 transition-colors cursor-row-resize" />
+                        <PanelResizeHandle className="h-0.5 bg-gray-600 hover:bg-blue-600 transition-colors cursor-row-resize" />
                         
                         <Panel defaultSize={50} minSize={10}>
                             <div className="w-full h-full border-2 border-gray-400">
@@ -26,13 +26,13 @@ const WorkFlowPreview = memo(function WorkFlowPreview() {
                         </Panel>
                     </PanelGroup>
                 </Panel>
-                
-                <PanelResizeHandle className="w-1 bg-gray-300 hover:bg-blue-400 transition-colors cursor-col-resize" />
+
+                <PanelResizeHandle className="w-0.5 bg-gray-600 hover:bg-blue-600 transition-colors cursor-col-resize" />
                 
                 {/* Right side panel */}
                 <Panel defaultSize={40} minSize={10}>
                     <div className="w-full h-full p-0.5">
-                        <StateAnimations />
+                        <StateAnimationsBuilder />
                     </div>
                 </Panel>
             </PanelGroup>
