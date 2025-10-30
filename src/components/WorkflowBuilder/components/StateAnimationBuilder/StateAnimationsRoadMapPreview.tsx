@@ -115,6 +115,8 @@ const StateAnimationsRoadMapPreview = memo(function StateAnimationsRoadMapPrevie
     const { workflows, setWorkflows } = useStateAnimationBuilder();
     const [activeWorkflow, setActiveWorkflow] = useState<WorkFlow | null>(null);
 
+    console.log(workflows)
+
     // Configure sensors for different input methods
     const sensors = useSensors(
         useSensor(PointerSensor, {

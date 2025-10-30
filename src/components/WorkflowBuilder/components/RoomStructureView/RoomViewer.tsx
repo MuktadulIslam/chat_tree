@@ -1,6 +1,6 @@
 'use client';
-import React, {MouseEvent } from 'react';
-import { Opening, Point,} from '../../type/roomDataTypes';
+import React, { MouseEvent } from 'react';
+import { Opening, Point, } from '../../type/roomDataTypes';
 import { useRoom } from '../../context/RoomContextProvider';
 
 
@@ -9,6 +9,7 @@ export default function RoomViewer() {
 	const {
 		roomData,
 		selectedPoint,
+		selectedStateName,
 		previousPoint,
 		roomRef,
 		SCALE,
@@ -17,8 +18,7 @@ export default function RoomViewer() {
 		CENTER_X,
 		CENTER_Y,
 		OPENING_THICKNESS,
-		setSelectedPoint,
-		setPreviousPoint
+		setSelectedPoint
 	} = useRoom();
 
 
@@ -50,7 +50,7 @@ export default function RoomViewer() {
 	};
 
 	const handleRoomClick = (e: MouseEvent<HTMLDivElement>) => {
-		if (!roomRef.current) return;
+		if (!roomRef.current || !selectedStateName) return;
 		const rect = roomRef.current.getBoundingClientRect();
 
 		// Convert pixel coordinates to absolute room coordinates
@@ -65,17 +65,9 @@ export default function RoomViewer() {
 			const newPoint: Point = {
 				x: parseFloat(centerCoords.x.toFixed(2)),
 				y: parseFloat(centerCoords.y.toFixed(2)),
-				selected_for: 'Angry Avatar',
-				animation_type: 'Pre Animation',
+				selected_for: selectedStateName,
+				animation_type: [],
 			};
-
-			// Move current selected point to previous, and update its animation_type
-			if (selectedPoint) {
-				setPreviousPoint({
-					...selectedPoint,
-					animation_type: 'Pre Animation',
-				});
-			}
 			setSelectedPoint(newPoint);
 		}
 	};
@@ -272,14 +264,18 @@ export default function RoomViewer() {
 						>
 							{/* Green glow effect */}
 							<div className="absolute inset-0 bg-green-500 rounded-full opacity-50 blur-sm scale-150" />
-							<div className="absolute bottom-full mb-2 left-1/2 transform -translate-x-1/2 bg-white border-2 border-green-700 rounded shadow-lg px-2 py-0.5 whitespace-nowrap z-50">
-								{previousPoint.selected_for && (
-									<div className="text-sm font-bold text-gray-800">{previousPoint.selected_for}</div>
+							<div className="max-w-44 absolute bottom-full mb-2 left-1/2 transform -translate-x-1/2 bg-white border-2 border-green-700 rounded shadow-lg px-2 py-0.5 whitespace-nowrap z-50">
+								<div className="w-full overflow-hidden text-sm font-bold text-gray-800">{previousPoint.selected_for}</div>
+								{previousPoint.animation_type.length > 0 && (
+									<div className="text-xs text-gray-500 italic mb-1">
+										{previousPoint.animation_type.map((type, index) => (
+											<span key={index}>
+												{`${type} ${index < previousPoint.animation_type.length - 1 ? ' | ' : 'Animation'}`}
+											</span>
+										))}
+									</div>
 								)}
-								{previousPoint.animation_type && (
-									<div className="text-xs text-gray-500 italic">{previousPoint.animation_type}</div>
-								)}
-								<div className="text-xs text-gray-600 my-1">
+								<div className="text-xs text-gray-600 mb-1">
 									({previousPoint.x}, {previousPoint.y})
 								</div>
 								{/* Arrow pointing down */}
@@ -291,24 +287,30 @@ export default function RoomViewer() {
 					{/* Selected Point Marker (Red) */}
 					{selectedPoint && (
 						<div
-							className="absolute w-4 h-4 bg-red-500 rounded-full border-2 border-red-700 shadow-lg transform -translate-x-1/2 -translate-y-1/2 animate-pulse pointer-events-auto z-50 cursor-pointer"
+							className="absolute w-4 h-4 bg-blue-500 rounded-full border-2 border-blue-700 shadow-lg transform -translate-x-1/2 -translate-y-1/2 animate-pulse pointer-events-auto z-50 cursor-pointer"
 							style={{
 								left: `${(CENTER_X + selectedPoint.x) * SCALE}px`,
 								top: `${(ROOM_WIDTH - (CENTER_Y + selectedPoint.y)) * SCALE}px`,
 							}}
 						>
 							{/* Red glow effect */}
-							<div className="absolute inset-0 bg-red-500 rounded-full opacity-50 blur-sm scale-150" />
-							<div className="absolute bottom-full mb-2 left-1/2 transform -translate-x-1/2 bg-white border-2 border-red-700 rounded shadow-lg px-2 py-0.5 whitespace-nowrap z-50">
-								<div className="text-sm font-bold text-gray-800">{selectedPoint.selected_for}</div>
-								{selectedPoint.animation_type && (
-									<div className="text-xs text-gray-500 italic">{selectedPoint.animation_type}</div>
+							<div className="absolute inset-0 bg-blue-500 rounded-full opacity-50 blur-sm scale-150" />
+							<div className="max-w-44 absolute bottom-full mb-2 left-1/2 transform -translate-x-1/2 bg-white border-2 border-blue-700 rounded shadow-lg px-2 py-0.5 whitespace-nowrap z-50">
+								<div className="w-full overflow-hidden text-sm font-bold text-gray-800">{selectedPoint.selected_for}</div>
+								{selectedPoint.animation_type.length > 0 && (
+									<div className="text-xs text-gray-500 italic mb-1">
+										{selectedPoint.animation_type.map((type, index) => (
+											<span key={index}>
+												{`${type} ${index < selectedPoint.animation_type.length - 1 ? ' | ' : 'Animation'}`}
+											</span>
+										))}
+									</div>
 								)}
-								<div className="text-xs text-gray-600 my-1">
+								<div className="text-xs text-gray-600 mb-1">
 									({selectedPoint.x}, {selectedPoint.y})
 								</div>
 								{/* Arrow pointing down */}
-								<div className="absolute top-full left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-8 border-r-8 border-t-8 border-l-transparent border-r-transparent border-t-red-700" />
+								<div className="absolute top-full left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-8 border-r-8 border-t-8 border-l-transparent border-r-transparent border-t-blue-700" />
 							</div>
 						</div>
 					)}

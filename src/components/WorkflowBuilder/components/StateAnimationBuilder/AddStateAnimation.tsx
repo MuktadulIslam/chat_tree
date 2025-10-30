@@ -5,6 +5,7 @@ import { IoCloseCircle } from "react-icons/io5";
 import { AnimationType, WorkFlow } from "../../type/stateAnimationBuilderDataType";
 import { useStateAnimationBuilder } from "../../context/StateAnimationBuilderContextProvider";
 import PersonalityStyleComponent from "./PersonalityStyleComponent";
+import { useRoom } from "../../context/RoomContextProvider";
 
 // Animation seance options mapping
 const ANIMATION_SEANCE_OPTIONS = {
@@ -13,6 +14,8 @@ const ANIMATION_SEANCE_OPTIONS = {
 };
 
 const AddStateAnimation = memo(function AddStateAnimation() {
+    const { selectedPoint, setPreviousPoint, setSelectedPoint, setSelectedStateName } = useRoom();
+
     const { selectedStatesForAnimation, setSelectedStatesForAnimation } = useStateAnimationBuilder();
     const { workflows, setWorkflows } = useStateAnimationBuilder();
 
@@ -57,16 +60,6 @@ const AddStateAnimation = memo(function AddStateAnimation() {
         setSelectedAnimations(prev => prev.filter(a => a !== animation));
     }, []);
 
-    // Get animation type color
-    const getAnimationTypeColor = (type: AnimationType): string => {
-        const colors = {
-            'Pre': 'bg-pink-100 text-pink-800 border-pink-300',
-            'During': 'bg-amber-100 text-amber-800 border-amber-300',
-            'Post': 'bg-emerald-100 text-emerald-800 border-emerald-300'
-        };
-        return colors[type];
-    };
-
     // Handle cancel
     const handleCancel = useCallback(() => {
         // Reset form
@@ -105,9 +98,9 @@ const AddStateAnimation = memo(function AddStateAnimation() {
             state_name: selectedStatesForAnimation.name,
             state_type: selectedStatesForAnimation.state_type,
             animations: animations,
-            order: maxOrder + 1,
-            position: { x: 150, y: 200 }    // for now static position 
+            order: maxOrder + 1
         };
+        if (selectedPoint) newWorkflow.position = { x: selectedPoint.x, y: selectedPoint.y }
 
         // Add workflow to workflows state
         setWorkflows(prev => [...prev, newWorkflow]);
@@ -120,6 +113,13 @@ const AddStateAnimation = memo(function AddStateAnimation() {
 
         // Deselect node after saving
         setSelectedStatesForAnimation(null);
+        const previousPoint = selectedPoint;
+        if (previousPoint) {
+            previousPoint.animation_type = selectedAnimationTypes;
+        }
+        setPreviousPoint(previousPoint);
+        setSelectedPoint(null);
+        setSelectedStateName(null)
     }, [
         workflowTitle,
         selectedAnimationTypes,
@@ -128,7 +128,10 @@ const AddStateAnimation = memo(function AddStateAnimation() {
         selectedStatesForAnimation,
         workflows,
         setWorkflows,
-        setSelectedStatesForAnimation
+        setSelectedStatesForAnimation,
+        selectedPoint,
+        setPreviousPoint,
+        setSelectedPoint
     ]);
 
     if (!selectedStatesForAnimation) {
@@ -145,7 +148,7 @@ const AddStateAnimation = memo(function AddStateAnimation() {
     }
 
     return (
-        <div className="w-full h-full bg-white overflow-hidden flex flex-col mt-1 space-y-2">
+        <div className="w-full h-full bg-white overflow-hidden flex flex-col mt-1 space-y-3">
             {/* Header Section */}
             <div className="w-full h-auto flex gap-2">
                 <div className="flex-1 border py-1 px-2 rounded-lg">
@@ -184,7 +187,7 @@ const AddStateAnimation = memo(function AddStateAnimation() {
                 </div>
             </div>
 
-            <div className="flex gap-3 items-center pl-2">
+            <div className="w-full flex gap-3 items-center pl-1">
                 <label className="block text-base font-bold mb-1 flex-none">Workflow Title:</label>
                 <input
                     type="text"
@@ -193,6 +196,24 @@ const AddStateAnimation = memo(function AddStateAnimation() {
                     className="w-full px-3 py-1 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
                     placeholder="Enter workflow title..."
                 />
+            </div>
+
+            <div className="w-full flex items-center gap-1 pl-1">
+                <p className="block text-base font-bold mb-1 flex-none">Selected Point:</p>
+                <div className="px-2 border rounded font-semibold text-base relative">
+                    {selectedPoint ?
+                        <span>{`${selectedPoint.x} , ${selectedPoint.y}`}</span>
+                        : <span>{`None , None`}</span>
+                    }
+                </div>
+                {selectedPoint &&
+                    <button className="bg-red-500 flex gap-1 px-2 items-center text-white rounded ml-4 cursor-pointer"
+                        onClick={() => setSelectedPoint(null)}
+                    >
+                        Deselect
+                        <IoCloseCircle size={18} />
+                    </button>
+                }
             </div>
 
             {/* Scrollable Content */}

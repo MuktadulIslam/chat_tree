@@ -5,9 +5,11 @@ import { Point, RoomData } from '../type/roomDataTypes';
 interface RoomContextType {
     roomData: RoomData | null;
     selectedPoint: Point | null;
+    selectedStateName: string | null
     previousPoint: Point | null;
     roomRef: React.RefObject<HTMLDivElement | null>;
     setSelectedPoint: React.Dispatch<React.SetStateAction<Point | null>>;
+    setSelectedStateName: React.Dispatch<string | null>;
     setPreviousPoint: React.Dispatch<React.SetStateAction<Point | null>>;
     setRoomData: React.Dispatch<React.SetStateAction<RoomData | null>>;
 
@@ -38,6 +40,7 @@ export default function RoomContextProvider({ children, initialRoomData }: RoomP
     const [roomData, setRoomData] = useState<RoomData | null>(initialRoomData || null);
     const [selectedPoint, setSelectedPoint] = useState<Point | null>(null);
     const [previousPoint, setPreviousPoint] = useState<Point | null>(null);
+    const [selectedStateName, setSelectedStateName] = useState<string | null>(null);
     const roomRef = useRef<HTMLDivElement>(null);
 
     const SCALE = 30; // pixels per unit
@@ -50,6 +53,7 @@ export default function RoomContextProvider({ children, initialRoomData }: RoomP
     const value: RoomContextType = {
         roomData,
         selectedPoint,
+        selectedStateName,
         previousPoint,
         roomRef,
         SCALE,
@@ -59,6 +63,7 @@ export default function RoomContextProvider({ children, initialRoomData }: RoomP
         CENTER_Y,
         OPENING_THICKNESS,
         setSelectedPoint,
+        setSelectedStateName,
         setPreviousPoint,
         setRoomData
     };

@@ -4,6 +4,7 @@ import { State } from "../../type/stateAnimationBuilderDataType";
 import { useStateAnimationBuilder } from "../../context/StateAnimationBuilderContextProvider";
 import { useWorkflow } from "../../context/WorkflowContextProvider";
 import PersonalityStyleComponent from "./PersonalityStyleComponent";
+import { useRoom } from "../../context/RoomContextProvider";
 
 
 // State Content Component
@@ -16,16 +17,20 @@ const StateContent = memo(function StateContent({
 }) {
     const { nodes } = useWorkflow();
     const { selectedStatesForAnimation, setSelectedStatesForAnimation } = useStateAnimationBuilder();
+    const {setSelectedStateName, setSelectedPoint} = useRoom();
 
     // Handle state click to select/deselect for animation
     const handleStateClick = useCallback(() => {
         // If clicking the same state again, deselect it
         if (selectedStatesForAnimation?.id === state.id) {
             setSelectedStatesForAnimation(null);
+            setSelectedStateName(null);
+            setSelectedPoint(null)
             return;
         }
         setSelectedStatesForAnimation(state);
-    }, [state.id, nodes, selectedStatesForAnimation, setSelectedStatesForAnimation]);
+        setSelectedStateName(state.name)
+    }, [state.id, nodes, selectedStatesForAnimation, setSelectedStatesForAnimation, setSelectedStateName]);
 
     return (
         <div
