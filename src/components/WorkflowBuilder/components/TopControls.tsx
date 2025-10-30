@@ -3,7 +3,7 @@ import { NodeType } from "../type";
 import { useWorkflow } from "../context/WorkflowContextProvider";
 
 const TopControls = memo(function TopControls({ addNode }: { addNode: (type: NodeType) => void }) {
-    const { setIsSetAnimationModeOn } = useWorkflow();
+    const { changeExamFlowFiewMode } = useWorkflow();
     
     return (
         <div className="bg-gray-800 text-white p-4 flex gap-4 items-center shadow-lg">
@@ -27,7 +27,7 @@ const TopControls = memo(function TopControls({ addNode }: { addNode: (type: Nod
                 + End (Shift+Alt+E)
             </button>
             <button
-                onClick={() => setIsSetAnimationModeOn(true)}
+                onClick={() => changeExamFlowFiewMode()}
                 className="px-4 py-2 bg-green-500 hover:bg-green-600 rounded font-semibold transition"
             >
                 Add Animation

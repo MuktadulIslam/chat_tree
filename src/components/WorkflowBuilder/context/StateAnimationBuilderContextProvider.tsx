@@ -1,35 +1,45 @@
 'use client'
 
 import React, { createContext, useContext, ReactNode, useState } from 'react'
-import { State } from '../type/stateAnimationBuilderDataType'
+import { State, WorkFlow } from '../type/stateAnimationBuilderDataType'
 
 
-interface StateAnimationBuilderContexType {
+interface StateAnimationBuilderContextType {
     states: State[]
     setStates: React.Dispatch<React.SetStateAction<State[]>>
+    workflows: WorkFlow[]
+    setWorkflows: React.Dispatch<React.SetStateAction<WorkFlow[]>>
+    selectedStatesForAnimation: State | null
+    setSelectedStatesForAnimation: React.Dispatch<React.SetStateAction<State | null>>
 }
 
-const StateAnimationBuilderContex = createContext<StateAnimationBuilderContexType | undefined>(undefined)
+const StateAnimationBuilderContext = createContext<StateAnimationBuilderContextType | undefined>(undefined)
 
 export const useStateAnimationBuilder = () => {
-    const context = useContext(StateAnimationBuilderContex)
+    const context = useContext(StateAnimationBuilderContext)
     if (!context) {
-        throw new Error('useWorkflow must be used within a WorkflowProvider')
+        throw new Error('useStateAnimationBuilder must be used within a StateAnimationBuilderContextProvider')
     }
     return context
 }
 
 export default function StateAnimationBuilderContextProvider({ children }: { children: ReactNode }) {
     const [states, setStates] = useState<State[]>([]);
+    const [workflows, setWorkflows] = useState<WorkFlow[]>([]);
+    const [selectedStatesForAnimation, setSelectedStatesForAnimation] = useState<State | null>(null);
 
-    const value: StateAnimationBuilderContexType = {
+    const value: StateAnimationBuilderContextType = {
         states,
-        setStates
+        setStates,
+        workflows,
+        setWorkflows,
+        selectedStatesForAnimation,
+        setSelectedStatesForAnimation
     }
 
     return (
-        <StateAnimationBuilderContex.Provider value={value}>
+        <StateAnimationBuilderContext.Provider value={value}>
             {children}
-        </StateAnimationBuilderContex.Provider>
+        </StateAnimationBuilderContext.Provider>
     );
 }

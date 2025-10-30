@@ -21,139 +21,7 @@ import { CSS } from '@dnd-kit/utilities';
 import { FaArrowDownLong } from "react-icons/fa6";
 import { WorkFlow } from '../../type/stateAnimationBuilderDataType';
 import AnimationTags from './AnimationTags';
-
-// Generate workflow data
-const generateWorkFlows = (): WorkFlow[] => {
-    const baseWorkFlows: WorkFlow[] = [
-        {
-            id: '1',
-            title: 'User Authentication Flow',
-            context: 'Handle user login, registration, and session management Handle user login, registration, and session management',
-            state_name: 'Asuth Pending',
-            state_type: 'state',
-            animations: [
-                { type: 'Pre', animation_seance: [] },
-                { type: 'During', animation_seance: [] }
-            ],
-            order: 1,
-            position: { x: 100, y: 100 }
-        },
-        {
-            id: '2',
-            title: 'Data Processing Pipeline',
-            context: 'Process and transform incoming data streams',
-            state_name: 'Processing',
-            state_type: 'state',
-            animations: [
-                { type: 'During', animation_seance: [] }
-            ],
-            order: 2
-        },
-        {
-            id: '3',
-            title: 'File Upload Handler',
-            context: 'Manage file uploads with validation and storage',
-            state_name: 'Upload Complete',
-            state_type: 'end',
-            animations: [
-                { type: 'Pre', animation_seance: [] },
-                { type: 'Post', animation_seance: [] }
-            ],
-            order: 3,
-            position: { x: 100, y: 300 }
-        },
-        {
-            id: '4',
-            title: 'Payment Gateway Integration',
-            context: 'Handle payment processing and transaction management',
-            state_name: 'Payment Pending',
-            state_type: 'state',
-            animations: [
-                { type: 'During', animation_seance: [] }
-            ],
-            order: 4,
-            position: { x: 100, y: 400 }
-        },
-        {
-            id: '5',
-            title: 'Email Notification System',
-            context: 'Send automated emails and track delivery status',
-            state_name: 'Notification Sent',
-            state_type: 'end',
-            animations: [
-                { type: 'Post', animation_seance: [] }
-            ],
-            order: 5
-        },
-        {
-            id: '6',
-            title: 'API Rate Limiter',
-            context: 'Manage API request limits and throttling',
-            state_name: 'Rate Limited',
-            state_type: 'state',
-            animations: [
-                { type: 'Pre', animation_seance: [] },
-                { type: 'During', animation_seance: [] }
-            ],
-            order: 6,
-            position: { x: 100, y: 600 }
-        },
-        {
-            id: '7',
-            title: 'Cache Management',
-            context: 'Handle data caching and cache invalidation',
-            state_name: 'Cache Updated',
-            state_type: 'state',
-            animations: [
-                { type: 'During', animation_seance: [] },
-                { type: 'Post', animation_seance: [] }
-            ],
-            order: 7,
-            position: { x: 100, y: 700 }
-        },
-        {
-            id: '8',
-            title: 'Error Handling Flow',
-            context: 'Manage application errors and exception handling',
-            state_name: 'Error Handled',
-            state_type: 'end',
-            animations: [
-                { type: 'Post', animation_seance: [] }
-            ],
-            order: 8,
-            position: { x: 100, y: 800 }
-        },
-        {
-            id: '9',
-            title: 'Data Synchronization',
-            context: 'Sync data across multiple devices and platforms',
-            state_name: 'Sync In Progress',
-            state_type: 'state',
-            animations: [
-                { type: 'During', animation_seance: [] }
-            ],
-            order: 9,
-            position: { x: 100, y: 900 }
-        },
-        {
-            id: '10',
-            title: 'Background Job Processor',
-            context: 'Process background jobs and scheduled tasks',
-            state_name: 'Job Queued',
-            state_type: 'state',
-            animations: [
-                { type: 'Pre', animation_seance: [] },
-                { type: 'During', animation_seance: [] },
-                { type: 'Post', animation_seance: [] }
-            ],
-            order: 10,
-            position: { x: 100, y: 1000 }
-        }
-    ];
-
-    return baseWorkFlows;
-};
-
+import { useStateAnimationBuilder } from '../../context/StateAnimationBuilderContextProvider';
 
 const WorkflowContent = memo(function WorkflowContent({ workflow }: { workflow: WorkFlow }) {
     return (
@@ -198,7 +66,7 @@ const WorkflowContent = memo(function WorkflowContent({ workflow }: { workflow: 
             </div>
         </div>
     );
-})
+});
 
 
 const SortableWorkflow = memo(function SortableWorkflow({ workflow }: { workflow: WorkFlow }) {
@@ -222,7 +90,7 @@ const SortableWorkflow = memo(function SortableWorkflow({ workflow }: { workflow
             style={style}
             {...attributes}
             {...listeners}
-            className={`p-2 border-2 rounded-xl transition-all duration-200 cursor-grab active:cursor-grabbing ${isDragging
+            className={`p-2 border-2 rounded-lg transition-all duration-200 cursor-grab active:cursor-grabbing ${isDragging
                 ? 'bg-blue-50 border-blue-400 shadow-lg opacity-80 z-50'
                 : 'bg-white border-gray-200 hover:border-blue-300 hover:shadow-md'
                 }`}
@@ -243,8 +111,8 @@ const WorkflowDragOverlay: React.FC<{ workflow: WorkFlow }> = ({ workflow }) => 
 
 
 // Main Workflow Manager Component
-const StateAnimationsRoadMapPreview = memo(function StateAnimationsRoadMapPreview({ initialWorkFlows = generateWorkFlows() }: { initialWorkFlows?: WorkFlow[] }) {
-    const [workflows, setWorkflows] = useState<WorkFlow[]>(initialWorkFlows);
+const StateAnimationsRoadMapPreview = memo(function StateAnimationsRoadMapPreview() {
+    const { workflows, setWorkflows } = useStateAnimationBuilder();
     const [activeWorkflow, setActiveWorkflow] = useState<WorkFlow | null>(null);
 
     // Configure sensors for different input methods
@@ -291,38 +159,44 @@ const StateAnimationsRoadMapPreview = memo(function StateAnimationsRoadMapPrevie
         <div className="w-full h-full bg-white rounded-2xl border shadow-lg flex flex-col">
             <h3 className="text-2xl font-bold text-gray-900 p-2 border-b-2">Animations Roadmap ({workflows.length})</h3>
             <div className="w-full h-full overflow-hidden p-2">
-                <DndContext
-                    sensors={sensors}
-                    collisionDetection={closestCenter}
-                    onDragStart={handleDragStart}
-                    onDragEnd={handleDragEnd}
-                >
-                    {/* Scrollable Workflow List */}
-                    <div className="h-full overflow-y-auto overflow-x-hidden pr-2">
-                        <SortableContext items={workflows.map(w => w.id)} strategy={verticalListSortingStrategy}>
-                            <div className="">
-                                {workflows.map((workflow, index) => (
-                                    <div key={index}>
-                                        <SortableWorkflow
-                                            key={workflow.id}
-                                            workflow={workflow}
-                                        />
-                                        {workflows.length - 1 != index &&
-                                            (<div className="w-full h-auto p-1 flex justify-center">
-                                                <FaArrowDownLong size={25} className='text-gray-700'/>
-                                            </div>
-                                            )}
-                                    </div>
-                                ))}
-                            </div>
-                        </SortableContext>
+                {workflows.length === 0 ? (
+                    <div className="flex items-center justify-center h-full text-gray-500">
+                        <div className="text-center">
+                            <p className="text-lg font-semibold">No Workflows Created</p>
+                            <p className="text-sm">Create workflows to see them here</p>
+                        </div>
                     </div>
+                ) : (
+                    <DndContext
+                        sensors={sensors}
+                        collisionDetection={closestCenter}
+                        onDragStart={handleDragStart}
+                        onDragEnd={handleDragEnd}
+                    >
+                        {/* Scrollable Workflow List */}
+                        <div className="h-full overflow-y-auto overflow-x-hidden pr-2">
+                            <SortableContext items={workflows.map(w => w.id)} strategy={verticalListSortingStrategy}>
+                                <div className="">
+                                    {workflows.map((workflow, index) => (
+                                        <div key={workflow.id}>
+                                            <SortableWorkflow workflow={workflow} />
+                                            {workflows.length - 1 !== index && (
+                                                <div className="w-full h-auto p-1 flex justify-center">
+                                                    <FaArrowDownLong size={25} className='text-gray-700' />
+                                                </div>
+                                            )}
+                                        </div>
+                                    ))}
+                                </div>
+                            </SortableContext>
+                        </div>
 
-                    {/* Drag Overlay */}
-                    <DragOverlay>
-                        {activeWorkflow ? <WorkflowDragOverlay workflow={activeWorkflow} /> : null}
-                    </DragOverlay>
-                </DndContext>
+                        {/* Drag Overlay */}
+                        <DragOverlay>
+                            {activeWorkflow ? <WorkflowDragOverlay workflow={activeWorkflow} /> : null}
+                        </DragOverlay>
+                    </DndContext>
+                )}
             </div>
         </div>
     );
