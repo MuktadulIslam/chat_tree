@@ -2,6 +2,7 @@
 import React, { MouseEvent } from 'react';
 import { Opening, Point, } from '../../type/roomDataTypes';
 import { useRoom } from '../../context/RoomContextProvider';
+import { TbArrowBigRightFilled } from "react-icons/tb";
 
 
 
@@ -66,7 +67,8 @@ export default function RoomViewer() {
 				x: parseFloat(centerCoords.x.toFixed(2)),
 				y: parseFloat(centerCoords.y.toFixed(2)),
 				selected_for: selectedStateName,
-				animation_type: [],
+				animation_type: null,
+				rotation: 0
 			};
 			setSelectedPoint(newPoint);
 		}
@@ -263,16 +265,14 @@ export default function RoomViewer() {
 							}}
 						>
 							{/* Green glow effect */}
+							<TbArrowBigRightFilled/>		{/* Avatar rotating indicator */}
 							<div className="absolute inset-0 bg-green-500 rounded-full opacity-50 blur-sm scale-150" />
 							<div className="max-w-44 absolute bottom-full mb-2 left-1/2 transform -translate-x-1/2 bg-white border-2 border-green-700 rounded shadow-lg px-2 py-0.5 whitespace-nowrap z-50">
 								<div className="w-full overflow-hidden text-sm font-bold text-gray-800">{previousPoint.selected_for}</div>
-								{previousPoint.animation_type.length > 0 && (
+								<div className="w-full overflow-hidden text-xs font-semibold text-gray-800">{previousPoint.roadmap_node}</div>
+								{previousPoint.animation_type && (
 									<div className="text-xs text-gray-500 italic mb-1">
-										{previousPoint.animation_type.map((type, index) => (
-											<span key={index}>
-												{`${type} ${index < previousPoint.animation_type.length - 1 ? ' | ' : 'Animation'}`}
-											</span>
-										))}
+										{`${previousPoint.animation_type} Animation`}
 									</div>
 								)}
 								<div className="text-xs text-gray-600 mb-1">
@@ -284,26 +284,24 @@ export default function RoomViewer() {
 						</div>
 					)}
 
-					{/* Selected Point Marker (Red) */}
+					{/* Selected Point Marker (Blue) */}
 					{selectedPoint && (
 						<div
-							className="absolute w-4 h-4 bg-blue-500 rounded-full border-2 border-blue-700 shadow-lg transform -translate-x-1/2 -translate-y-1/2 animate-pulse pointer-events-auto z-50 cursor-pointer"
+							className="absolute w-5 h-5 bg-blue-500 rounded-full border-2 border-blue-700 shadow-lg transform -translate-x-1/2 -translate-y-1/2 animate-pulse pointer-events-auto z-50 cursor-pointer flex justify-center items-center"
 							style={{
 								left: `${(CENTER_X + selectedPoint.x) * SCALE}px`,
 								top: `${(ROOM_WIDTH - (CENTER_Y + selectedPoint.y)) * SCALE}px`,
 							}}
 						>
-							{/* Red glow effect */}
+							{/* Blue glow effect */}
+							<TbArrowBigRightFilled/>		{/* Avatar rotating indicator */}
 							<div className="absolute inset-0 bg-blue-500 rounded-full opacity-50 blur-sm scale-150" />
 							<div className="max-w-44 absolute bottom-full mb-2 left-1/2 transform -translate-x-1/2 bg-white border-2 border-blue-700 rounded shadow-lg px-2 py-0.5 whitespace-nowrap z-50">
 								<div className="w-full overflow-hidden text-sm font-bold text-gray-800">{selectedPoint.selected_for}</div>
-								{selectedPoint.animation_type.length > 0 && (
+								<div className="w-full overflow-hidden text-xs font-semibold text-gray-800">{selectedPoint.roadmap_node}</div>
+								{selectedPoint.animation_type && (
 									<div className="text-xs text-gray-500 italic mb-1">
-										{selectedPoint.animation_type.map((type, index) => (
-											<span key={index}>
-												{`${type} ${index < selectedPoint.animation_type.length - 1 ? ' | ' : 'Animation'}`}
-											</span>
-										))}
+										{`${selectedPoint.animation_type} Animation`}
 									</div>
 								)}
 								<div className="text-xs text-gray-600 mb-1">

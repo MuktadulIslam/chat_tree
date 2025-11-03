@@ -43,7 +43,7 @@ export default function RoomContextProvider({ children, initialRoomData }: RoomP
     const [selectedStateName, setSelectedStateName] = useState<string | null>(null);
     const roomRef = useRef<HTMLDivElement>(null);
 
-    const SCALE = 30; // pixels per unit
+    const SCALE = 40; // pixels per unit
     const ROOM_LENGTH = roomData?.room_dimensions.length || 0;
     const ROOM_WIDTH = roomData?.room_dimensions.width || 0;
     const CENTER_X = ROOM_LENGTH / 2;

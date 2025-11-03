@@ -11,7 +11,7 @@ export const sampleRoomData: RoomData = {
             id: '1',
             name: 'King Bed',
             position: { x: 0, y: 15 },
-            dimensions: { length: 8, width: 6 },
+            dimensions: { length: 5, width: 4 },
             rotation: 0,
         },
         // Nightstands on both sides of bed
@@ -19,14 +19,14 @@ export const sampleRoomData: RoomData = {
             id: '2',
             name: 'Nightstand',
             position: { x: -6, y: 15 },
-            dimensions: { length: 2, width: 2 },
+            dimensions: { length: 1.5, width: 1.5 },
             rotation: 0,
         },
         {
             id: '3',
             name: 'Nightstand',
             position: { x: 6, y: 15 },
-            dimensions: { length: 2, width: 2 },
+            dimensions: { length: 1.5, width: 1.5 },
             rotation: 0,
         },
         // Dresser on left wall
@@ -34,7 +34,7 @@ export const sampleRoomData: RoomData = {
             id: '4',
             name: 'Dresser',
             position: { x: -20, y: 8 },
-            dimensions: { length: 6, width: 2 },
+            dimensions: { length: 4, width: 2 },
             rotation: 0,
         },
         // Wardrobe on left wall
@@ -42,7 +42,7 @@ export const sampleRoomData: RoomData = {
             id: '5',
             name: 'Wardrobe',
             position: { x: -20, y: -5 },
-            dimensions: { length: 5, width: 3 },
+            dimensions: { length: 4, width: 2 },
             rotation: 0,
         },
         // Desk and chair on right wall
@@ -50,14 +50,14 @@ export const sampleRoomData: RoomData = {
             id: '6',
             name: 'Desk',
             position: { x: 18, y: 10 },
-            dimensions: { length: 5, width: 3 },
+            dimensions: { length: 4, width: 2 },
             rotation: 0,
         },
         {
             id: '7',
             name: 'Office Chair',
             position: { x: 18, y: 7 },
-            dimensions: { length: 2, width: 2 },
+            dimensions: { length: 1.5, width: 1.5 },
             rotation: 0,
         },
         // Reading nook in corner
@@ -65,14 +65,14 @@ export const sampleRoomData: RoomData = {
             id: '8',
             name: 'Armchair',
             position: { x: 15, y: -12 },
-            dimensions: { length: 3, width: 3 },
+            dimensions: { length: 2, width: 2 },
             rotation: 30,
         },
         {
             id: '9',
             name: 'Side Table',
             position: { x: 18, y: -10 },
-            dimensions: { length: 2, width: 2 },
+            dimensions: { length: 1.5, width: 1.5 },
             rotation: 0,
         },
         {
@@ -87,7 +87,7 @@ export const sampleRoomData: RoomData = {
             id: '11',
             name: 'Bookshelf',
             position: { x: 0, y: -16 },
-            dimensions: { length: 8, width: 2 },
+            dimensions: { length: 5, width: 2 },
             rotation: 0,
         },
         // TV stand opposite the bed
@@ -95,7 +95,7 @@ export const sampleRoomData: RoomData = {
             id: '12',
             name: 'TV Stand',
             position: { x: 0, y: -12 },
-            dimensions: { length: 6, width: 2 },
+            dimensions: { length: 4, width: 2 },
             rotation: 0,
         },
         // Bench at foot of bed
@@ -126,7 +126,7 @@ export const sampleRoomData: RoomData = {
             id: '16',
             name: 'Area Rug',
             position: { x: 0, y: 2 },
-            dimensions: { length: 12, width: 10 },
+            dimensions: { length: 6, width: 4 },
             rotation: 0,
         },
         // Ottoman

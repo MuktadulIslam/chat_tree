@@ -50,7 +50,7 @@ const WorkflowContent = memo(function WorkflowContent({ workflow }: { workflow: 
 
                 {/* Animation Types */}
                 <div className="mb-1">
-                    <AnimationTags types={workflow.animations.map((animation) => animation.type)} />
+                    <AnimationTags types={[workflow.animation.type]} />
                 </div>
 
                 {/* Workflow Metadata */}

@@ -21,31 +21,23 @@ const AddStateAnimation = memo(function AddStateAnimation() {
 
     // State for workflow form
     const [workflowTitle, setWorkflowTitle] = useState<string>('');
-    const [selectedAnimationTypes, setSelectedAnimationTypes] = useState<AnimationType[]>([]);
+    const [selectedAnimationType, setSelectedAnimationType] = useState<AnimationType | ''>('');
     const [selectedAnimationSeance, setSelectedAnimationSeance] = useState<string>('');
     const [selectedAnimations, setSelectedAnimations] = useState<string[]>([]);
-
 
     // Reset form when node changes
     useEffect(() => {
         if (selectedStatesForAnimation) {
             setWorkflowTitle(selectedStatesForAnimation.name);
-            setSelectedAnimationTypes([]);
+            setSelectedAnimationType('');
             setSelectedAnimationSeance('');
             setSelectedAnimations([]);
         }
     }, [selectedStatesForAnimation]);
 
-    // Add animation type
-    const addAnimationType = useCallback((type: AnimationType) => {
-        if (!selectedAnimationTypes.includes(type)) {
-            setSelectedAnimationTypes(prev => [...prev, type]);
-        }
-    }, [selectedAnimationTypes]);
-
-    // Remove animation type
-    const removeAnimationType = useCallback((type: AnimationType) => {
-        setSelectedAnimationTypes(prev => prev.filter(t => t !== type));
+    // Handle animation type selection
+    const handleAnimationTypeChange = useCallback((type: AnimationType) => {
+        setSelectedAnimationType(type);
     }, []);
 
     // Add animation
@@ -64,7 +56,7 @@ const AddStateAnimation = memo(function AddStateAnimation() {
     const handleCancel = useCallback(() => {
         // Reset form
         setWorkflowTitle('');
-        setSelectedAnimationTypes([]);
+        setSelectedAnimationType('');
         setSelectedAnimationSeance('');
         setSelectedAnimations([]);
 
@@ -74,16 +66,15 @@ const AddStateAnimation = memo(function AddStateAnimation() {
 
     // Handle save workflow
     const handleSaveWorkflow = useCallback(() => {
-        if (!selectedStatesForAnimation) return;
-
-        // Create animations array based on selected types
-        const animations = selectedAnimationTypes.map(type => ({
-            type,
+        if (!selectedStatesForAnimation || !selectedAnimationType || !selectedAnimationSeance || selectedAnimations.length == 0) return;
+        // Create animations array based on selected type
+        const animation = {
+            type: selectedAnimationType,
             animation_seance: [{
                 name: selectedAnimationSeance,
                 animations: selectedAnimations
             }]
-        }));
+        };
 
         // Get the highest order number from existing workflows
         const maxOrder = workflows.length > 0
@@ -97,7 +88,7 @@ const AddStateAnimation = memo(function AddStateAnimation() {
             context: selectedStatesForAnimation.context,
             state_name: selectedStatesForAnimation.name,
             state_type: selectedStatesForAnimation.state_type,
-            animations: animations,
+            animation: animation,
             order: maxOrder + 1
         };
         if (selectedPoint) newWorkflow.position = { x: selectedPoint.x, y: selectedPoint.y }
@@ -107,7 +98,7 @@ const AddStateAnimation = memo(function AddStateAnimation() {
 
         // Reset form
         setWorkflowTitle('');
-        setSelectedAnimationTypes([]);
+        setSelectedAnimationType('');
         setSelectedAnimationSeance('');
         setSelectedAnimations([]);
 
@@ -115,14 +106,14 @@ const AddStateAnimation = memo(function AddStateAnimation() {
         setSelectedStatesForAnimation(null);
         const previousPoint = selectedPoint;
         if (previousPoint) {
-            previousPoint.animation_type = selectedAnimationTypes;
+            previousPoint.animation_type = selectedAnimationType;
         }
         setPreviousPoint(previousPoint);
         setSelectedPoint(null);
         setSelectedStateName(null)
     }, [
         workflowTitle,
-        selectedAnimationTypes,
+        selectedAnimationType,
         selectedAnimationSeance,
         selectedAnimations,
         selectedStatesForAnimation,
@@ -173,7 +164,7 @@ const AddStateAnimation = memo(function AddStateAnimation() {
                 <div className="w-24 h-full space-y-1">
                     <button
                         onClick={handleSaveWorkflow}
-                        disabled={!workflowTitle.trim() || selectedAnimationTypes.length === 0 || !selectedAnimationSeance || selectedAnimations.length === 0}
+                        disabled={!workflowTitle.trim() || !selectedAnimationType || !selectedAnimationSeance || selectedAnimations.length === 0}
                         className="w-full py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-semibold transition disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                         Save
@@ -220,47 +211,18 @@ const AddStateAnimation = memo(function AddStateAnimation() {
             <div className="flex-1 overflow-y-auto flex gap-1 pb-1">
                 {/* First Section: Animation Types */}
                 <div className="border py-1 px-2 rounded-xl overflow-hidden flex-1">
-                    <label className="text-base font-semibold mb-2 line-clamp-1">Selected Animation Types:</label>
-
-                    {/* Selected Animation Types Display */}
-                    {selectedAnimationTypes.length > 0 ? (
-                        <div className="flex flex-wrap gap-2 p-1 bg-gray-50 overflow-hidden rounded border border-dashed">
-                            {selectedAnimationTypes.map(type => (
-                                <div key={type} className={`relative px-3 rounded border font-medium`}>
-                                    {type}
-                                    <button
-                                        onClick={() => removeAnimationType(type)}
-                                        className="absolute -top-1 -right-2 text-red-500 bg-white rounded-full cursor-pointer"
-                                    >
-                                        <IoCloseCircle size={18} />
-                                    </button>
-                                </div>
-                            ))}
-                        </div>
-                    ) : (
-                        <div className="p-2 bg-gray-50 rounded border text-sm text-gray-500 text-center">
-                            No animation types selected
-                        </div>
-                    )}
-
-                    {/* Animation Type Dropdown */}
+                    <label className="text-base font-semibold line-clamp-1">Animation Type:</label>
                     <select
-                        value=""
+                        value={selectedAnimationType}
                         onChange={(e) => {
-                            if (e.target.value) {
-                                addAnimationType(e.target.value as AnimationType);
-                                e.target.value = '';
-                            }
+                            setSelectedAnimationType(e.target.value as AnimationType);
                         }}
                         className="w-full px-3 py-1 mt-2 border rounded outline-none"
                     >
-                        <option value="" disabled>Select type</option>
-                        {selectedStatesForAnimation.animation_types
-                            .filter(type => !selectedAnimationTypes.includes(type))
-                            .map(animation => (
-                                <option key={animation} value={animation}>{animation}</option>
-                            ))
-                        }
+                        <option value="">Select type</option>
+                        {selectedStatesForAnimation.animation_types.map(animation => (
+                            <option key={animation} value={animation}>{animation}</option>
+                        ))}
                     </select>
                 </div>
 

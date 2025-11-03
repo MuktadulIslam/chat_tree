@@ -19,7 +19,7 @@ export interface WorkFlow {
     context?: string;
     state_name: string;
     state_type: StateType;
-    animations: Animations[];
+    animation: Animations;
     order: number;
     position?: { x: number; y: number };
 }

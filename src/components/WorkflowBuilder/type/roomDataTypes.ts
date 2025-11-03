@@ -3,8 +3,10 @@ import { AnimationType } from "./stateAnimationBuilderDataType";
 export interface Point {
 	x: number;
 	y: number;
-	selected_for: string | null; // for now it will be 'Angry Avatar'
-	animation_type: AnimationType[]; // for now it will be 'Pre Animation'
+	rotation: number;
+	selected_for: string | null;
+	roadmap_node?: string;
+	animation_type: AnimationType | null;
 }
 
 export interface RoomObject {
