@@ -1,6 +1,8 @@
 'use client';
 import { memo, useState, useCallback, useEffect } from "react";
 import { IoCloseCircle } from "react-icons/io5";
+import { TbRotate, TbRotateClockwise2 } from "react-icons/tb";
+import { IoArrowRedoSharp, IoArrowUndo } from "react-icons/io5";
 
 import { AnimationType, WorkFlow } from "../../type/stateAnimationBuilderDataType";
 import { useStateAnimationBuilder } from "../../context/StateAnimationBuilderContextProvider";
@@ -25,6 +27,9 @@ const AddStateAnimation = memo(function AddStateAnimation() {
     const [selectedAnimationSeance, setSelectedAnimationSeance] = useState<string>('');
     const [selectedAnimations, setSelectedAnimations] = useState<string[]>([]);
 
+    // State for avatar rotation
+    const [rotation, setRotation] = useState<number>(0);
+
     // Reset form when node changes
     useEffect(() => {
         if (selectedStatesForAnimation) {
@@ -32,8 +37,18 @@ const AddStateAnimation = memo(function AddStateAnimation() {
             setSelectedAnimationType('');
             setSelectedAnimationSeance('');
             setSelectedAnimations([]);
+            setRotation(0);
         }
     }, [selectedStatesForAnimation]);
+
+    // Update rotation from selected point when available
+    useEffect(() => {
+        if (selectedPoint && selectedPoint.rotation !== undefined) {
+            setRotation(selectedPoint.rotation);
+        } else {
+            setRotation(0);
+        }
+    }, [selectedPoint]);
 
     // Handle animation type selection
     const handleAnimationTypeChange = useCallback((type: AnimationType) => {
@@ -52,6 +67,31 @@ const AddStateAnimation = memo(function AddStateAnimation() {
         setSelectedAnimations(prev => prev.filter(a => a !== animation));
     }, []);
 
+    // Handle rotation change from slider
+    const handleRotationChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+        const newRotation = parseInt(e.target.value, 10);
+        setRotation(newRotation);
+        if (selectedPoint) {
+            setSelectedPoint(prev => prev ? { ...prev, rotation: newRotation } : null);
+        }
+    }, [selectedPoint, setSelectedPoint]);
+
+    // Handle rotation buttons (±90 degrees)
+    const handleRotate = useCallback((amount: number) => {
+        const newRotation = ((rotation + amount) % 360 + 360) % 360;
+        if (newRotation > 180) {
+            setRotation(newRotation - 360);
+        } else {
+            setRotation(newRotation);
+        }
+        if (selectedPoint) {
+            setSelectedPoint(prev => prev ? {
+                ...prev,
+                rotation: newRotation > 180 ? newRotation - 360 : newRotation
+            } : null);
+        }
+    }, [rotation, selectedPoint, setSelectedPoint]);
+
     // Handle cancel
     const handleCancel = useCallback(() => {
         // Reset form
@@ -59,6 +99,7 @@ const AddStateAnimation = memo(function AddStateAnimation() {
         setSelectedAnimationType('');
         setSelectedAnimationSeance('');
         setSelectedAnimations([]);
+        setRotation(0);
 
         // Deselect node
         setSelectedStatesForAnimation(null);
@@ -89,9 +130,16 @@ const AddStateAnimation = memo(function AddStateAnimation() {
             state_name: selectedStatesForAnimation.name,
             state_type: selectedStatesForAnimation.state_type,
             animation: animation,
-            order: maxOrder + 1
+            order: maxOrder + 1,
+            rotation: rotation
         };
-        if (selectedPoint) newWorkflow.position = { x: selectedPoint.x, y: selectedPoint.y }
+
+        if (selectedPoint) {
+            newWorkflow.position = {
+                x: selectedPoint.x,
+                y: selectedPoint.y
+            };
+        }
 
         // Add workflow to workflows state
         setWorkflows(prev => [...prev, newWorkflow]);
@@ -101,16 +149,18 @@ const AddStateAnimation = memo(function AddStateAnimation() {
         setSelectedAnimationType('');
         setSelectedAnimationSeance('');
         setSelectedAnimations([]);
+        setRotation(0);
 
         // Deselect node after saving
         setSelectedStatesForAnimation(null);
         const previousPoint = selectedPoint;
         if (previousPoint) {
             previousPoint.animation_type = selectedAnimationType;
+            // Keep the rotation value
         }
         setPreviousPoint(previousPoint);
         setSelectedPoint(null);
-        setSelectedStateName(null)
+        setSelectedStateName(null);
     }, [
         workflowTitle,
         selectedAnimationType,
@@ -122,7 +172,8 @@ const AddStateAnimation = memo(function AddStateAnimation() {
         setSelectedStatesForAnimation,
         selectedPoint,
         setPreviousPoint,
-        setSelectedPoint
+        setSelectedPoint,
+        rotation
     ]);
 
     if (!selectedStatesForAnimation) {
@@ -154,7 +205,7 @@ const AddStateAnimation = memo(function AddStateAnimation() {
                         </div>
                     </div>
                     {selectedStatesForAnimation.context && (
-                        <p className="text-sm text-gray-700 line-clamp-2">
+                        <p className="text-sm text-gray-700 line-clamp-4">
                             <span className="font-bold mr-1 underline">Context:</span>
                             {selectedStatesForAnimation.context}
                         </p>
@@ -189,21 +240,62 @@ const AddStateAnimation = memo(function AddStateAnimation() {
                 />
             </div>
 
-            <div className="w-full flex items-center gap-1 pl-1">
-                <p className="block text-base font-bold mb-1 flex-none">Selected Point:</p>
-                <div className="px-2 border rounded font-semibold text-base relative">
-                    {selectedPoint ?
-                        <span>{`${selectedPoint.x} , ${selectedPoint.y}`}</span>
-                        : <span>{`None , None`}</span>
-                    }
+            {/* Point Selection and Rotation Control Section */}
+            <div className="w-full flex flex-row items-center gap-4 pl-1 pb-2">
+                <div className="flex items-center gap-1 shrink-0">
+                    <p className="block text-base font-bold flex-none">Selected Point:</p>
+                    <div className="px-2 border rounded font-semibold text-base text-nowrap">
+                        {selectedPoint ?
+                            `${selectedPoint.x} , ${selectedPoint.y}, ${selectedPoint.rotation}°` : `None , None, None`
+                        }
+                    </div>
                 </div>
+
                 {selectedPoint &&
-                    <button className="bg-red-500 flex gap-1 px-2 items-center text-white rounded ml-4 cursor-pointer"
-                        onClick={() => setSelectedPoint(null)}
-                    >
-                        Deselect
-                        <IoCloseCircle size={18} />
-                    </button>
+                    <>
+                        <div className="flex items-center gap-1 shrink-0">
+                            <p className="block text-base font-bold mr-1 flex-none">Avatar Rotation:</p>
+                            <div className="w-auto flex gap-1">
+                                <button
+                                    onClick={() => handleRotate(-90)}
+                                    className="p-1 text-black rounded border border-black hover:bg-blue-200 transition-colors"
+                                    title="Rotate 90° left"
+                                >
+                                    <IoArrowUndo />
+                                </button>
+                                <div className="w-40 h-6 relative">
+                                    <input
+                                        type="range"
+                                        min="-180"
+                                        max="180"
+                                        step="5"
+                                        value={selectedPoint.rotation}
+                                        onChange={handleRotationChange}
+                                        className="w-full h-6 accent-blue-600"
+                                    />
+                                    <div className="w-full absolute -bottom-3 flex justify-between text-[9px] text-gray-900 font-semibold">
+                                        <span>-180°</span>
+                                        <span>0°</span>
+                                        <span>180°</span>
+                                    </div>
+                                </div>
+                                <button
+                                    onClick={() => handleRotate(90)}
+                                    className="p-1 text-black rounded border border-black hover:bg-blue-200 transition-colors"
+                                    title="Rotate 90° right"
+                                >
+                                    <IoArrowRedoSharp />
+                                </button>
+                            </div>
+                        </div>
+
+                        <button className="bg-red-500 flex gap-1 px-2 items-center text-white rounded ml-2 cursor-pointer shrink-0"
+                            onClick={() => setSelectedPoint(null)}
+                        >
+                            Deselect
+                            <IoCloseCircle size={18} />
+                        </button>
+                    </>
                 }
             </div>
 
@@ -249,7 +341,6 @@ const AddStateAnimation = memo(function AddStateAnimation() {
                     <label className="text-base font-semibold line-clamp-1">Animations for {selectedAnimationSeance}:</label>
 
                     {/* Selected Animations Display */}
-
                     {selectedAnimations.length > 0 ? (
                         <div className="flex flex-wrap gap-2 p-1 bg-gray-50 overflow-hidden rounded border border-dashed">
                             {selectedAnimations.map(type => (

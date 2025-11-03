@@ -22,6 +22,7 @@ export interface WorkFlow {
     animation: Animations;
     order: number;
     position?: { x: number; y: number };
+    rotation: number;
 }
 
 export interface State {

@@ -1,4 +1,5 @@
 import React, { memo, useState } from 'react';
+import { FaLocationCrosshairs } from "react-icons/fa6";
 import {
     DndContext,
     closestCenter,
@@ -38,31 +39,26 @@ const WorkflowContent = memo(function WorkflowContent({ workflow }: { workflow: 
                 </div>
 
                 {/* Workflow Description */}
-                <p className="text-gray-600 text-sm line-clamp-2">
+                {/* <p className="text-gray-600 text-sm line-clamp-2">
                     {workflow.context}
-                </p>
-                <p className={`${workflow.state_type === 'end' ? 'text-red-400 ' : 'text-blue-400 '} mb-2 line-clamp-2 text-sm`}>
+                </p> */}
+                <p className={`${workflow.state_type === 'end' ? 'text-red-400 ' : 'text-blue-400 '} mb-1 line-clamp-2 text-sm`}>
                     <strong>
                         <span className='mr-1'>State:</span>
                         {workflow.state_name}
                     </strong>
                 </p>
 
-                {/* Animation Types */}
-                <div className="mb-1">
+                <div className="flex gap-3">
                     <AnimationTags types={[workflow.animation.type]} />
+                    {/* Workflow Metadata */}
+                    {workflow.position && (
+                        <div className="flex items-center gap-1 text-gray-500 text-sm font-semibold">
+                            <FaLocationCrosshairs />
+                            <span>{`[${workflow.position.x}, ${workflow.position.y}, ${workflow.rotation}°]`}</span>
+                        </div>
+                    )}
                 </div>
-
-                {/* Workflow Metadata */}
-                {workflow.position && (
-                    <div className="flex items-center gap-1 text-gray-500">
-                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                        </svg>
-                        <span>{workflow.position.x}, {workflow.position.y}</span>
-                    </div>
-                )}
             </div>
         </div>
     );
