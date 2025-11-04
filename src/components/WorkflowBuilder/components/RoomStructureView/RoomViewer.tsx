@@ -256,68 +256,72 @@ export default function RoomViewer() {
 					})}
 
 					{/* Previous Point Marker (Green) */}
-					{previousPoint && (
-						<div
-							className="absolute w-5 h-5 bg-green-500 rounded-full border-2 border-green-700 shadow-lg transform -translate-x-1/2 -translate-y-1/2 pointer-events-auto z-40 cursor-pointer"
-							style={{
-								left: `${(CENTER_X + previousPoint.x) * SCALE}px`,
-								top: `${(ROOM_WIDTH - (CENTER_Y + previousPoint.y)) * SCALE}px`,
-							}}
-						>
-							<TbArrowBigRightFilled size={16} style={{
-								transform: `rotate(${previousPoint.rotation}deg)`,
-								zIndex: 60
-							}} />
+					{previousPoint &&
+						!(previousPoint.x == selectedPoint?.x && previousPoint.y == selectedPoint.y && previousPoint.rotation != selectedPoint.rotation) &&
+						(
+							<div
+								className="absolute w-5 h-5 bg-green-500 rounded-full border-2 border-green-700 shadow-lg transform -translate-x-1/2 -translate-y-1/2 pointer-events-auto z-40 cursor-pointer"
+								style={{
+									left: `${(CENTER_X + previousPoint.x) * SCALE}px`,
+									top: `${(ROOM_WIDTH - (CENTER_Y + previousPoint.y)) * SCALE}px`,
+								}}
+							>
+								<TbArrowBigRightFilled size={16} style={{
+									transform: `rotate(${previousPoint.rotation}deg)`,
+									zIndex: 60
+								}} />
 
-							<div className="absolute inset-0 bg-green-500 rounded-full opacity-50 blur-sm scale-150" />
-							<div className="max-w-44 absolute bottom-full mb-2 left-1/2 transform -translate-x-1/2 bg-white border-2 border-green-700 rounded shadow-lg px-2 py-0.5 whitespace-nowrap z-50">
-								<div className="w-full overflow-hidden text-sm font-bold text-gray-800">{previousPoint.selected_for}</div>
-								<div className="w-full overflow-hidden text-xs font-semibold text-gray-800">{previousPoint.roadmap_node}</div>
-								{previousPoint.animation_type && (
-									<div className="text-xs text-gray-500 italic mb-1">
-										{`${previousPoint.animation_type} Animation`}
+								<div className="absolute inset-0 bg-green-500 rounded-full opacity-50 blur-sm scale-150" />
+								<div className="max-w-44 absolute bottom-full mb-2 left-1/2 transform -translate-x-1/2 bg-white border-2 border-green-700 rounded shadow-lg px-2 py-0.5 whitespace-nowrap z-50">
+									<div className="w-full overflow-hidden text-sm font-bold text-gray-800">{previousPoint.selected_for}</div>
+									<div className="w-full overflow-hidden text-xs font-semibold text-gray-800">{previousPoint.roadmap_node}</div>
+									{previousPoint.animation_type && (
+										<div className="text-xs text-gray-500 italic mb-1">
+											{`${previousPoint.animation_type} Animation`}
+										</div>
+									)}
+									<div className="text-xs text-gray-600 mb-1">
+										{`(${previousPoint.x}, ${previousPoint.y}, ${previousPoint.rotation}°)`}
 									</div>
-								)}
-								<div className="text-xs text-gray-600 mb-1">
-									({previousPoint.x}, {previousPoint.y})
+									{/* Arrow pointing down */}
+									<div className="absolute top-full left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-8 border-r-8 border-t-8 border-l-transparent border-r-transparent border-t-green-700" />
 								</div>
-								{/* Arrow pointing down */}
-								<div className="absolute top-full left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-8 border-r-8 border-t-8 border-l-transparent border-r-transparent border-t-green-700" />
 							</div>
-						</div>
-					)}
+						)}
 
 					{/* Selected Point Marker (Blue) */}
-					{selectedPoint && (
-						<div
-							className="absolute w-5 h-5 bg-blue-500 rounded-full border-2 border-blue-700 shadow-lg transform -translate-x-1/2 -translate-y-1/2 animate-pulse pointer-events-auto z-50 cursor-pointer flex justify-center items-center"
-							style={{
-								left: `${(CENTER_X + selectedPoint.x) * SCALE}px`,
-								top: `${(ROOM_WIDTH - (CENTER_Y + selectedPoint.y)) * SCALE}px`,
-							}}
-						>
-							<TbArrowBigRightFilled size={16} style={{
-								transform: `rotate(${selectedPoint.rotation}deg)`,
-								zIndex: 60
-							}} />
+					{selectedPoint &&
+						!(previousPoint?.x == selectedPoint.x && previousPoint.y == selectedPoint.y && previousPoint.rotation == selectedPoint.rotation)	// Both should not be same position
+						&& (
+							<div
+								className="absolute w-5 h-5 bg-blue-500 rounded-full border-2 border-blue-700 shadow-lg transform -translate-x-1/2 -translate-y-1/2 animate-pulse pointer-events-auto z-50 cursor-pointer flex justify-center items-center"
+								style={{
+									left: `${(CENTER_X + selectedPoint.x) * SCALE}px`,
+									top: `${(ROOM_WIDTH - (CENTER_Y + selectedPoint.y)) * SCALE}px`,
+								}}
+							>
+								<TbArrowBigRightFilled size={16} style={{
+									transform: `rotate(${selectedPoint.rotation}deg)`,
+									zIndex: 60
+								}} />
 
-							<div className="absolute inset-0 bg-blue-500 rounded-full opacity-50 blur-sm scale-150" />
-							<div className="max-w-44 absolute bottom-full mb-2 left-1/2 transform -translate-x-1/2 bg-white border-2 border-blue-700 rounded shadow-lg px-2 py-0.5 whitespace-nowrap z-50">
-								<div className="w-full overflow-hidden text-sm font-bold text-gray-800">{selectedPoint.selected_for}</div>
-								<div className="w-full overflow-hidden text-xs font-semibold text-gray-800">{selectedPoint.roadmap_node}</div>
-								{selectedPoint.animation_type && (
-									<div className="text-xs text-gray-500 italic mb-1">
-										{`${selectedPoint.animation_type} Animation`}
+								<div className="absolute inset-0 bg-blue-500 rounded-full opacity-50 blur-sm scale-150" />
+								<div className="max-w-44 absolute bottom-full mb-2 left-1/2 transform -translate-x-1/2 bg-white border-2 border-blue-700 rounded shadow-lg px-2 py-0.5 whitespace-nowrap z-50">
+									<div className="w-full overflow-hidden text-sm font-bold text-gray-800">{selectedPoint.selected_for}</div>
+									<div className="w-full overflow-hidden text-xs font-semibold text-gray-800">{selectedPoint.roadmap_node}</div>
+									{selectedPoint.animation_type && (
+										<div className="text-xs text-gray-500 italic mb-1">
+											{`${selectedPoint.animation_type} Animation`}
+										</div>
+									)}
+									<div className="text-xs text-gray-600 mb-1">
+										{`(${selectedPoint.x}, ${selectedPoint.y}, ${selectedPoint.rotation}°)`}
 									</div>
-								)}
-								<div className="text-xs text-gray-600 mb-1">
-									{`(${selectedPoint.x}, ${selectedPoint.y}, ${selectedPoint.rotation}°)`}
+									{/* Arrow pointing down */}
+									<div className="absolute top-full left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-8 border-r-8 border-t-8 border-l-transparent border-r-transparent border-t-blue-700" />
 								</div>
-								{/* Arrow pointing down */}
-								<div className="absolute top-full left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-8 border-r-8 border-t-8 border-l-transparent border-r-transparent border-t-blue-700" />
 							</div>
-						</div>
-					)}
+						)}
 				</div>
 			</div>
 		</div>

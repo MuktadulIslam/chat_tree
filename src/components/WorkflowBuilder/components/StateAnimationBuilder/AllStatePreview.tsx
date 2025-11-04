@@ -5,6 +5,7 @@ import { useStateAnimationBuilder } from "../../context/StateAnimationBuilderCon
 import { useWorkflow } from "../../context/WorkflowContextProvider";
 import PersonalityStyleComponent from "./PersonalityStyleComponent";
 import { useRoom } from "../../context/RoomContextProvider";
+import { Point } from "../../type/roomDataTypes";
 
 
 // State Content Component
@@ -16,8 +17,13 @@ const StateContent = memo(function StateContent({
     isSelected: boolean;
 }) {
     const { nodes } = useWorkflow();
-    const { selectedStatesForAnimation, setSelectedStatesForAnimation } = useStateAnimationBuilder();
-    const {setSelectedStateName, setSelectedPoint} = useRoom();
+    const { selectedStatesForAnimation, workflows, setSelectedStatesForAnimation } = useStateAnimationBuilder();
+    const { setSelectedStateName, setSelectedPoint, setPreviousPoint } = useRoom();
+
+    const getLastWorkflowForState = useCallback((state: State) => {
+        const stateWorkflows = workflows.filter(w => w.state_id == state.id).sort((a, b) => a.order - b.order);
+        return stateWorkflows.length > 0 ? stateWorkflows[stateWorkflows.length - 1] : null;
+    }, [workflows]);
 
     // Handle state click to select/deselect for animation
     const handleStateClick = useCallback(() => {
@@ -26,10 +32,26 @@ const StateContent = memo(function StateContent({
             setSelectedStatesForAnimation(null);
             setSelectedStateName(null);
             setSelectedPoint(null)
+            setPreviousPoint(null)
             return;
+        } else {
+            setSelectedStatesForAnimation(state);
+            setSelectedStateName(state.name);
+
+            const lastWorkflow = getLastWorkflowForState(state)
+            if (lastWorkflow) {
+                const lastPosition: Point = {
+                    x: lastWorkflow?.position?.x ?? 0,
+                    y: lastWorkflow?.position?.y ?? 0,
+                    rotation: lastWorkflow?.rotation ?? 0,
+                    selected_for: state.name,
+                    roadmap_node: lastWorkflow?.title,
+                    animation_type: null
+                }
+                setSelectedPoint(lastPosition)
+                setPreviousPoint(lastPosition)
+            }
         }
-        setSelectedStatesForAnimation(state);
-        setSelectedStateName(state.name)
     }, [state.id, nodes, selectedStatesForAnimation, setSelectedStatesForAnimation, setSelectedStateName]);
 
     return (

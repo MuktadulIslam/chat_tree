@@ -18,6 +18,7 @@ export interface WorkFlow {
     title: string;
     context?: string;
     state_name: string;
+    state_id: string;
     state_type: StateType;
     animation: Animations;
     order: number;

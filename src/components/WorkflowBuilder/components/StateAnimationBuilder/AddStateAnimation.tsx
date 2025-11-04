@@ -1,7 +1,6 @@
 'use client';
 import { memo, useState, useCallback, useEffect } from "react";
 import { IoCloseCircle } from "react-icons/io5";
-import { TbRotate, TbRotateClockwise2 } from "react-icons/tb";
 import { IoArrowRedoSharp, IoArrowUndo } from "react-icons/io5";
 
 import { AnimationType, WorkFlow } from "../../type/stateAnimationBuilderDataType";
@@ -33,7 +32,6 @@ const AddStateAnimation = memo(function AddStateAnimation() {
     // Reset form when node changes
     useEffect(() => {
         if (selectedStatesForAnimation) {
-            setWorkflowTitle(selectedStatesForAnimation.name);
             setSelectedAnimationType('');
             setSelectedAnimationSeance('');
             setSelectedAnimations([]);
@@ -50,10 +48,6 @@ const AddStateAnimation = memo(function AddStateAnimation() {
         }
     }, [selectedPoint]);
 
-    // Handle animation type selection
-    const handleAnimationTypeChange = useCallback((type: AnimationType) => {
-        setSelectedAnimationType(type);
-    }, []);
 
     // Add animation
     const addAnimation = useCallback((animation: string) => {
@@ -103,6 +97,9 @@ const AddStateAnimation = memo(function AddStateAnimation() {
 
         // Deselect node
         setSelectedStatesForAnimation(null);
+        setPreviousPoint(null);
+        setSelectedPoint(null);
+        setSelectedStateName(null);
     }, [setSelectedStatesForAnimation]);
 
     // Handle save workflow
@@ -128,6 +125,7 @@ const AddStateAnimation = memo(function AddStateAnimation() {
             title: workflowTitle.trim(),
             context: selectedStatesForAnimation.context,
             state_name: selectedStatesForAnimation.name,
+            state_id: selectedStatesForAnimation.id,
             state_type: selectedStatesForAnimation.state_type,
             animation: animation,
             order: maxOrder + 1,
@@ -151,8 +149,6 @@ const AddStateAnimation = memo(function AddStateAnimation() {
         setSelectedAnimations([]);
         setRotation(0);
 
-        // Deselect node after saving
-        setSelectedStatesForAnimation(null);
         const previousPoint = selectedPoint;
         if (previousPoint) {
             previousPoint.animation_type = selectedAnimationType;
@@ -160,7 +156,6 @@ const AddStateAnimation = memo(function AddStateAnimation() {
         }
         setPreviousPoint(previousPoint);
         setSelectedPoint(null);
-        setSelectedStateName(null);
     }, [
         workflowTitle,
         selectedAnimationType,

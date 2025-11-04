@@ -1,4 +1,4 @@
-import React, { memo, useState } from 'react';
+import React, { memo, useCallback, useState } from 'react';
 import { FaLocationCrosshairs } from "react-icons/fa6";
 import {
     DndContext,
@@ -23,6 +23,8 @@ import { FaArrowDownLong } from "react-icons/fa6";
 import { WorkFlow } from '../../type/stateAnimationBuilderDataType';
 import AnimationTags from './AnimationTags';
 import { useStateAnimationBuilder } from '../../context/StateAnimationBuilderContextProvider';
+import { useRoom } from '../../context/RoomContextProvider';
+import { Point } from '../../type/roomDataTypes';
 
 const WorkflowContent = memo(function WorkflowContent({ workflow }: { workflow: WorkFlow }) {
     return (
@@ -108,10 +110,12 @@ const WorkflowDragOverlay: React.FC<{ workflow: WorkFlow }> = ({ workflow }) => 
 
 // Main Workflow Manager Component
 const StateAnimationsRoadMapPreview = memo(function StateAnimationsRoadMapPreview() {
-    const { workflows, setWorkflows } = useStateAnimationBuilder();
+    const { setPreviousPoint } = useRoom();
+    const { workflows, setWorkflows, selectedStatesForAnimation } = useStateAnimationBuilder();
     const [activeWorkflow, setActiveWorkflow] = useState<WorkFlow | null>(null);
 
-    console.log(workflows)
+    // Filter workflows for the selected state only
+    const filteredWorkflows = selectedStatesForAnimation ? workflows.filter(workflow => workflow.state_id == selectedStatesForAnimation.id) : [];
 
     // Configure sensors for different input methods
     const sensors = useSensors(
@@ -132,6 +136,20 @@ const StateAnimationsRoadMapPreview = memo(function StateAnimationsRoadMapPrevie
         setActiveWorkflow(workflow || null);
     };
 
+    // const updateTheLastPositonInRoomView = () => {
+    //     const lastWorkflow: WorkFlow = (filteredWorkflows.sort((a, b) => a.order - b.order))[filteredWorkflows.length - 1];
+
+    //     const lastPosition: Point = {
+    //         x: lastWorkflow.position?.x ?? 0,
+    //         y: lastWorkflow.position?.y ?? 0,
+    //         rotation: lastWorkflow?.rotation ?? 0,
+    //         selected_for: lastWorkflow.state_name,
+    //         roadmap_node: lastWorkflow?.title,
+    //         animation_type: null
+    //     }
+    //     setPreviousPoint(lastPosition)
+    // }
+
     // Handle drag end and reorder with order attribute update
     const handleDragEnd = (event: DragEndEvent) => {
         const { active, over } = event;
@@ -151,17 +169,25 @@ const StateAnimationsRoadMapPreview = memo(function StateAnimationsRoadMapPrevie
                 }));
             });
         }
+        // updateTheLastPositonInRoomView()
     };
 
     return (
         <div className="w-full h-full bg-white rounded-2xl border shadow-lg flex flex-col">
-            <h3 className="text-2xl font-bold text-gray-900 p-2 border-b-2">Animations Roadmap ({workflows.length})</h3>
+            <h3 className="text-2xl font-bold text-gray-900 p-2 border-b-2">Animations Roadmap ({filteredWorkflows.length})</h3>
             <div className="w-full h-full overflow-hidden p-2">
-                {workflows.length === 0 ? (
+                {!selectedStatesForAnimation ? (
+                    <div className="flex items-center justify-center h-full text-gray-500">
+                        <div className="text-center">
+                            <p className="text-lg font-semibold">No State Selected</p>
+                            <p className="text-sm">Please select a state to view its animation roadmap</p>
+                        </div>
+                    </div>
+                ) : filteredWorkflows.length === 0 ? (
                     <div className="flex items-center justify-center h-full text-gray-500">
                         <div className="text-center">
                             <p className="text-lg font-semibold">No Workflows Created</p>
-                            <p className="text-sm">Create workflows to see them here</p>
+                            <p className="text-sm">Create workflows for "{selectedStatesForAnimation.name}" to see them here</p>
                         </div>
                     </div>
                 ) : (
@@ -173,12 +199,12 @@ const StateAnimationsRoadMapPreview = memo(function StateAnimationsRoadMapPrevie
                     >
                         {/* Scrollable Workflow List */}
                         <div className="h-full overflow-y-auto overflow-x-hidden pr-2">
-                            <SortableContext items={workflows.map(w => w.id)} strategy={verticalListSortingStrategy}>
+                            <SortableContext items={filteredWorkflows.map(w => w.id)} strategy={verticalListSortingStrategy}>
                                 <div className="">
-                                    {workflows.map((workflow, index) => (
+                                    {filteredWorkflows.map((workflow, index) => (
                                         <div key={workflow.id}>
                                             <SortableWorkflow workflow={workflow} />
-                                            {workflows.length - 1 !== index && (
+                                            {filteredWorkflows.length - 1 !== index && (
                                                 <div className="w-full h-auto p-1 flex justify-center">
                                                     <FaArrowDownLong size={25} className='text-gray-700' />
                                                 </div>
